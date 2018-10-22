@@ -7,5 +7,6 @@ public interface CharacterConstants {
     char more = '>';
     char less = '<';
     char colon = ':';
+    char semicolon = ';';
 
 }

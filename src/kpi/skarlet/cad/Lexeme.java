@@ -14,23 +14,19 @@ public class Lexeme {
     private Integer idnCode = null;
     private Integer conCode = null;
 
-    Lexeme(String lex, int code) {
+    Lexeme(String lex, int line, int code) {
         lexemes.add(this);
 
         this.lexeme = lex;
+        this.line = line;
         this.lexemeCode = code;
     }
 
-    Lexeme(String lex, int code, int additionCode) {
-        this(lex, code);
+    Lexeme(String lex, int line, int code, int additionCode) {
+        this(lex, line, code);
         if (code == 100) lblCode = additionCode;
         else if (code == 101) idnCode = additionCode;
         else if (code == 102) conCode = additionCode;
-    }
-
-    Lexeme(String lex, int line, int code, int additionCode) {
-        this(lex, code, additionCode);
-        this.line = line;
     }
 
     public List<Lexeme> getList() {
@@ -67,7 +63,7 @@ public class Lexeme {
         for (Lexeme lexeme : lexemes) {
             System.out.printf("%4d | %7d | %10s | %8d | %8s | %8s | %8s\r\n",
                     index,
-                    0,  // need add
+                    lexeme.line,  // need add
                     lexeme.lexeme,
                     lexeme.lexemeCode,
                     (lexeme.idnCode != null)? lexeme.idnCode: "",

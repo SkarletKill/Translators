@@ -19,7 +19,7 @@ public class LexicalAnalyser {
     private static final Map<String, Integer> keywords = initKeywords();
 
     private static final String EMPTY_LEX = "";
-//    private static String ACTIVE_TYPE = null;
+    private static VariableType ACTIVE_TYPE;
 
     private static final int LBL_CODE = 100;
     private static final int IDN_CODE = 101;
@@ -156,6 +156,7 @@ public class LexicalAnalyser {
     }
 
     private void state5() {
+        if (ch == CC.semicolon && ACTIVE_TYPE != null) ACTIVE_TYPE = null;
         addLex(lex, LexemeType.TERMINAL_SYBOL); // OP
         HAS_TO_READ = true;
 //        state1();
@@ -175,7 +176,7 @@ public class LexicalAnalyser {
     private void state7() {
         if (ch == CC.equal) {
             lex += ch;
-            state14();  // !=
+            state13();  // !=
         } else {
 //            throw new UnexpectedLexemeException(lex);
         }
@@ -184,10 +185,10 @@ public class LexicalAnalyser {
     private void state8() {
         if (ch == CC.more) {
             lex += ch;
-            state15();  // >>
+            state13();  // >>
         } else if (ch == CC.equal) {
             lex += ch;
-            state16();  // >=
+            state13();  // >=
         } else {
             addLex(lex, LexemeType.TERMINAL_SYBOL); // >
             HAS_TO_READ = false;
@@ -198,10 +199,10 @@ public class LexicalAnalyser {
     private void state9() {
         if (ch == CC.less) {
             lex += ch;
-            state17();  // <<
+            state13();  // <<
         } else if (ch == CC.equal) {
             lex += ch;
-            state18();  // <=
+            state13();  // <=
         } else {
             addLex(lex, LexemeType.TERMINAL_SYBOL);     // <
             HAS_TO_READ = false;
@@ -236,36 +237,6 @@ public class LexicalAnalyser {
 //        state1();
     }
 
-    private void state14() {
-        addLex(lex, LexemeType.TERMINAL_SYBOL);
-        HAS_TO_READ = true;
-//        state1();
-    }
-
-    private void state15() {
-        addLex(lex, LexemeType.TERMINAL_SYBOL);
-        HAS_TO_READ = true;
-//        state1();
-    }
-
-    private void state16() {
-        addLex(lex, LexemeType.TERMINAL_SYBOL);
-        HAS_TO_READ = true;
-//        state1();
-    }
-
-    private void state17() {
-        addLex(lex, LexemeType.TERMINAL_SYBOL);
-        HAS_TO_READ = true;
-//        state1();
-    }
-
-    private void state18() {
-        addLex(lex, LexemeType.TERMINAL_SYBOL);
-        HAS_TO_READ = true;
-//        state1();
-    }
-
     private void clearLex() {
         lex = "";
     }
@@ -273,16 +244,17 @@ public class LexicalAnalyser {
     // it's only emulate a nice-working function
     private void addLex(String lex, LexemeType lexType) {
         if (lexType.equals(LexemeType.TERMINAL_SYBOL)) {
-            new Lexeme(lex, getSpecialLexCode(lex));
+            if (getSpecialLexCode(lex) == 1) ACTIVE_TYPE = VariableType.INT;
+            else if (getSpecialLexCode(lex) == 2) ACTIVE_TYPE = VariableType.FLOAT;
+            new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
         } else if (lexType.equals(LexemeType.LABEL)) {
-            new Lexeme(lex, LBL_CODE, getLabelCode(lex));
+            new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
             if (!isExist(lex, labelList)) labelList.add(lex);
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {
-            new Lexeme(lex, IDN_CODE, getIdentifierCode(lex));
+            new Lexeme(lex, LINE_NUMBER, IDN_CODE, getIdentifierCode(lex));
             if (!isExist(lex, identifierList)) identifierList.add(lex);
-//            keywords.contains("int");
         } else if (lexType.equals(LexemeType.CONSTANT)) {
-            new Lexeme(lex, CON_CODE, getConstantCode(lex));
+            new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
             if (!isExist(lex, constantList)) constantList.add(lex);
         } else {
 //            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
