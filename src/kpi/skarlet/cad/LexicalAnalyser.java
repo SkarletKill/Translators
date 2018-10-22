@@ -3,10 +3,8 @@ package kpi.skarlet.cad;
 import kpi.skarlet.cad.exceptions.UnknownSymbolException;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,17 +37,16 @@ public class LexicalAnalyser {
 
             LexicalAnalyser la = new LexicalAnalyser();
             do {
-//                ch = la.nextChar();
-//                System.out.print((char) ch);
-                la.state1((char) ch, "", false);
+                la.state1();
             }
             while (true);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (UnknownSymbolException e) {
+            System.err.println(e.getMessage());
         }
     }
 
-    // need testing
     private char nextChar() throws IOException {
         int ch = br.read();
         if (ch == -1) {
@@ -60,156 +57,211 @@ public class LexicalAnalyser {
             Lexeme.printTable();
             System.exit(1);
         }
-        return (char) ch;
+        return LexicalAnalyser.ch = (char) ch;
     }
 
     // HAS_TO_READ ?
-    private void state1(char ch, String lex, boolean hasToRead) throws IOException{
+    private void state1() throws IOException, UnknownSymbolException {
+        clearLex();
         if (HAS_TO_READ) ch = nextChar();
 //        if (Character.isJavaIdentifierStart(ch)) {
         if (Character.isLetter(ch)) {
-            state2(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state2();
         } else if (Character.isDigit(ch)) {
-            state3(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state3();
         } else if (ch == CC.dot) {
-            state4(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state4();
         } else if (ch == CC.equal) {
-            state6(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state6();
         } else if (ch == CC.exclamation) {
-            state7(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state7();
         } else if (ch == CC.more) {
-            state8(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state8();
         } else if (ch == CC.less) {
-            state9(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state9();
         } else if (isSingleCharacterSeparator(ch)) {
-            state5(ch, lex + ch);
-        } else if (Character.isSpaceChar(ch)) {
-            if(ch == '\n') LINE_NUMBER++;
-            state1(nextChar(), lex, false);
+            lex += ch;
+            state5();
+        } else if (isWhiteSeparator(ch)) {
+            if (ch == '\n') LINE_NUMBER++;
+            HAS_TO_READ = true;
+            // go to state 1
+            return;
+        } else {
+            System.out.println();
+            throw new UnknownSymbolException(ch, LINE_NUMBER);
         }
-//        else throw new UnknownSymbolException(ch, LINE_NUMBER);
 
     }
 
-    private void state2(char ch, String lex) throws IOException {
+    private void state2() throws IOException {
         if (Character.isLetterOrDigit(ch)) {
-            state2(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state2();
         } else if (ch == CC.colon) {
-            state11(ch, lex + ch);
+            lex += ch;
+            state11();
         } else {
             addLex(lex, LexemeType.IDENTIFIER);
-            state1(ch, EMPTY_LEX, false);
+            HAS_TO_READ = false;
+//            state1();
         }
     }
 
-    private void state3(char ch, String lex) throws IOException {
+    private void state3() throws IOException {
         if (Character.isDigit(ch)) {
-            state3(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state3();
         } else if (ch == CC.dot) {
-            state12(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state12();
         } else {
             addLex(lex, LexemeType.CONSTANT);
-            state1(ch, EMPTY_LEX, false);
+            HAS_TO_READ = false;
+//            state1();
         }
     }
 
-    private void state4(char ch, String lex) throws IOException {
+    private void state4() throws IOException {
         if (Character.isDigit(ch)) {
-            state12(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state12();
         } else {
 //            throw new UnexpectedLexemeException(lex);
         }
     }
 
-    private void state5(char ch, String lex) throws IOException {
+    private void state5() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL); // OP
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state6(char ch, String lex) throws IOException {
+    private void state6() throws IOException {
         if (ch == CC.equal) {
-            state13(ch, lex + ch);  // ==
+            lex += ch;
+            state13();  // ==
         } else {
             addLex(lex, LexemeType.TERMINAL_SYBOL); // =
-            state1(ch, EMPTY_LEX, false);
+            HAS_TO_READ = false;
+//            state1();
         }
     }
 
-    private void state7(char ch, String lex) throws IOException {
+    private void state7() throws IOException {
         if (ch == CC.equal) {
-            state14(ch, lex + ch);  // !=
+            lex += ch;
+            state14();  // !=
         } else {
 //            throw new UnexpectedLexemeException(lex);
         }
     }
 
-    private void state8(char ch, String lex) throws IOException {
+    private void state8() throws IOException {
         if (ch == CC.more) {
-            state15(ch, lex + ch);  // >>
+            lex += ch;
+            state15();  // >>
         } else if (ch == CC.equal) {
-            state16(ch, lex + ch);  // >=
+            lex += ch;
+            state16();  // >=
         } else {
             addLex(lex, LexemeType.TERMINAL_SYBOL); // >
-            state1(ch, EMPTY_LEX, false);
+            HAS_TO_READ = false;
+//            state1();
         }
     }
 
-    private void state9(char ch, String lex) throws IOException {
+    private void state9() throws IOException {
         if (ch == CC.less) {
-            state17(ch, lex + ch);  // <<
+            lex += ch;
+            state17();  // <<
         } else if (ch == CC.equal) {
-            state18(ch, lex + ch);  // <=
+            lex += ch;
+            state18();  // <=
         } else {
             addLex(lex, LexemeType.TERMINAL_SYBOL);     // <
-            state1(ch, EMPTY_LEX, false);
+            HAS_TO_READ = false;
+//            state1();
         }
     }
 
-    private void state10(char ch, String lex) throws IOException {
+    private void state10() throws IOException {
     }
 
-    private void state11(char ch, String lex) throws IOException {
+    private void state11() throws IOException {
         addLex(lex, LexemeType.LABEL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state12(char ch, String lex) throws IOException {
+    private void state12() throws IOException {
         if (Character.isDigit(ch)) {
-            state12(nextChar(), lex + ch);
+            lex += ch;
+            nextChar();
+            state12();
         } else {
             addLex(lex, LexemeType.CONSTANT);
-            state1(ch, EMPTY_LEX, false);
+            HAS_TO_READ = false;
+//            state1();
         }
     }
 
-    private void state13(char ch, String lex) throws IOException {
+    private void state13() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state14(char ch, String lex) throws IOException {
+    private void state14() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state15(char ch, String lex) throws IOException {
+    private void state15() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state16(char ch, String lex) throws IOException {
+    private void state16() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state17(char ch, String lex) throws IOException {
+    private void state17() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
     }
 
-    private void state18(char ch, String lex) throws IOException {
+    private void state18() throws IOException {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
-        state1(ch, EMPTY_LEX, true);
+        HAS_TO_READ = true;
+//        state1();
+    }
+
+    private void clearLex() {
+        lex = "";
     }
 
     // it's only emulate a nice-working function
@@ -227,15 +279,21 @@ public class LexicalAnalyser {
         }
     }
 
+    private boolean isWhiteSeparator(char ch) {
+        if (Character.isSpaceChar(ch)) return true;
+        if(ch == '\t' || ch == '\r' || ch == '\n') return true;
+        return false;
+    }
+
     // need testing
     private boolean isSingleCharacterSeparator(char ch) {
-        String regex = "[:;,+\\-*/=><{}]";
+        String regex = "[:;,+\\-*/=><{}()]";
         String character = "" + ch;
         return character.matches(regex);
     }
 
     // it's only emulate a nice-working function
-    private boolean checkForKeyword(String lex){
+    private boolean checkForKeyword(String lex) {
         return false;
     }
 
