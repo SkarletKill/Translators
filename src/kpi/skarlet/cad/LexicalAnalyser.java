@@ -6,11 +6,15 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LexicalAnalyser {
     private static CharacterConstants CC;
     private static BufferedReader br;
+
+    private static final Map<String, Integer> keywords = initKeywords();
 
     private static final String EMPTY_LEX = "";
 //    private static String ACTIVE_TYPE = null;
@@ -32,6 +36,7 @@ public class LexicalAnalyser {
 //    Function<Function<>, Function<>> call_f = func -> func(nextChar(), lex+ch);
 
     public static void main(String[] args) {
+
         try {
             br = new BufferedReader(new FileReader("res/program.txt"));
 
@@ -117,7 +122,7 @@ public class LexicalAnalyser {
             lex += ch;
             state11();
         } else {
-            addLex(lex, LexemeType.IDENTIFIER);
+            addLex(lex, (isKeyword(lex)) ? LexemeType.TERMINAL_SYBOL : LexemeType.IDENTIFIER);
             HAS_TO_READ = false;
 //            state1();
         }
@@ -270,10 +275,14 @@ public class LexicalAnalyser {
             new Lexeme(lex, getSpecialLexCode(lex));
         } else if (lexType.equals(LexemeType.LABEL)) {
             new Lexeme(lex, LBL_CODE, getLabelCode(lex));
+            if (!isExist(lex, labelList)) labelList.add(lex);
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {
             new Lexeme(lex, IDN_CODE, getIdentifierCode(lex));
+            if (!isExist(lex, identifierList)) identifierList.add(lex);
+//            keywords.contains("int");
         } else if (lexType.equals(LexemeType.CONSTANT)) {
             new Lexeme(lex, CON_CODE, getConstantCode(lex));
+            if (!isExist(lex, constantList)) constantList.add(lex);
         } else {
 
         }
@@ -281,7 +290,7 @@ public class LexicalAnalyser {
 
     private boolean isWhiteSeparator(char ch) {
         if (Character.isSpaceChar(ch)) return true;
-        if(ch == '\t' || ch == '\r' || ch == '\n') return true;
+        if (ch == '\t' || ch == '\r' || ch == '\n') return true;
         return false;
     }
 
@@ -292,9 +301,9 @@ public class LexicalAnalyser {
         return character.matches(regex);
     }
 
-    // it's only emulate a nice-working function
-    private boolean checkForKeyword(String lex) {
-        return false;
+    // need testing
+    private boolean isKeyword(String lex) {
+        return keywords.get(lex) != null;
     }
 
     // need testing
@@ -302,16 +311,20 @@ public class LexicalAnalyser {
         return Lexeme.get(lex) != null;
     }
 
-    // it's only emulate a nice-working function
+    // need testing
     private Integer getSpecialLexCode(String lex) {
-        return 0;
+        return keywords.get(lex);
+    }
+
+    private boolean isExist(String lex, List<String> list) {
+        return list.indexOf(lex) != -1;
     }
 
     // need to check
     private int getCode(List<String> list, String lex) {
         int code = list.indexOf(lex);
-        if (code == -1) code = list.size() + 1;
-        return code;
+        if (code == -1) code = list.size();
+        return code + 1;
     }
 
     private int getLabelCode(String lex) {
@@ -324,6 +337,49 @@ public class LexicalAnalyser {
 
     private int getConstantCode(String lex) {
         return getCode(constantList, lex);
+    }
+
+    private static Map<String, Integer> initKeywords() {
+        return new HashMap<>() {
+            {
+                put("int", 1);
+                put("float", 2);
+                put("for", 3);
+                put("to", 4);
+                put("step", 5);
+                put("goto", 6);
+                put("if", 7);
+                put("cin", 8);
+                put("cout", 9);
+                put("not", 10);
+                put("and", 11);
+                put("or", 12);
+                put(",", 13);
+                put("=", 14);
+                put(">>", 15);
+                put("<<", 16);
+                put("==", 17);
+                put("!=", 18);
+                put(">", 19);
+                put("<", 20);
+                put(">=", 21);
+                put("<=", 22);
+//                put("^", 23);
+                put("*", 24);
+                put("/", 25);
+                put("+", 26);
+                put("-", 27);
+                put("(", 28);
+                put(")", 29);
+                put(":", 30);
+                put("{", 31);
+                put("}", 32);
+                put(";", 33);
+//                put("LBL", 100);
+//                put("IDN", 101);
+//                put("CON", 102);
+            }
+        };
     }
 
 }

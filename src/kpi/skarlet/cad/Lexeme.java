@@ -8,26 +8,29 @@ public class Lexeme {
     private static List<Lexeme> lexemes = new ArrayList<>();
 
     private String lexeme;
+    private int line;
     private int lexemeCode;
     private Integer lblCode = null;
     private Integer idnCode = null;
     private Integer conCode = null;
 
     Lexeme(String lex, int code) {
+        lexemes.add(this);
+
         this.lexeme = lex;
         this.lexemeCode = code;
-
-        lexemes.add(this);
     }
 
     Lexeme(String lex, int code, int additionCode) {
-        this.lexeme = lex;
-        this.lexemeCode = code;
+        this(lex, code);
         if (code == 100) lblCode = additionCode;
         else if (code == 101) idnCode = additionCode;
         else if (code == 102) conCode = additionCode;
+    }
 
-        lexemes.add(this);
+    Lexeme(String lex, int line, int code, int additionCode) {
+        this(lex, code, additionCode);
+        this.line = line;
     }
 
     public List<Lexeme> getList() {
