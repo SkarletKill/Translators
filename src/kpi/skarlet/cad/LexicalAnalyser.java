@@ -1,5 +1,7 @@
 package kpi.skarlet.cad;
 
+import kpi.skarlet.cad.exceptions.UnexpectedLexemeException;
+import kpi.skarlet.cad.exceptions.UnknownLexemeTypeException;
 import kpi.skarlet.cad.exceptions.UnknownSymbolException;
 
 import java.io.BufferedReader;
@@ -36,7 +38,6 @@ public class LexicalAnalyser {
 //    Function<Function<>, Function<>> call_f = func -> func(nextChar(), lex+ch);
 
     public static void main(String[] args) {
-
         try {
             br = new BufferedReader(new FileReader("res/program.txt"));
 
@@ -154,13 +155,13 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state5() throws IOException {
+    private void state5() {
         addLex(lex, LexemeType.TERMINAL_SYBOL); // OP
         HAS_TO_READ = true;
 //        state1();
     }
 
-    private void state6() throws IOException {
+    private void state6() {
         if (ch == CC.equal) {
             lex += ch;
             state13();  // ==
@@ -171,7 +172,7 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state7() throws IOException {
+    private void state7() {
         if (ch == CC.equal) {
             lex += ch;
             state14();  // !=
@@ -180,7 +181,7 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state8() throws IOException {
+    private void state8() {
         if (ch == CC.more) {
             lex += ch;
             state15();  // >>
@@ -194,7 +195,7 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state9() throws IOException {
+    private void state9() {
         if (ch == CC.less) {
             lex += ch;
             state17();  // <<
@@ -208,10 +209,10 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state10() throws IOException {
+    private void state10() {
     }
 
-    private void state11() throws IOException {
+    private void state11() {
         addLex(lex, LexemeType.LABEL);
         HAS_TO_READ = true;
 //        state1();
@@ -229,37 +230,37 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state13() throws IOException {
+    private void state13() {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
         HAS_TO_READ = true;
 //        state1();
     }
 
-    private void state14() throws IOException {
+    private void state14() {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
         HAS_TO_READ = true;
 //        state1();
     }
 
-    private void state15() throws IOException {
+    private void state15() {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
         HAS_TO_READ = true;
 //        state1();
     }
 
-    private void state16() throws IOException {
+    private void state16() {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
         HAS_TO_READ = true;
 //        state1();
     }
 
-    private void state17() throws IOException {
+    private void state17() {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
         HAS_TO_READ = true;
 //        state1();
     }
 
-    private void state18() throws IOException {
+    private void state18() {
         addLex(lex, LexemeType.TERMINAL_SYBOL);
         HAS_TO_READ = true;
 //        state1();
@@ -284,7 +285,7 @@ public class LexicalAnalyser {
             new Lexeme(lex, CON_CODE, getConstantCode(lex));
             if (!isExist(lex, constantList)) constantList.add(lex);
         } else {
-
+//            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
         }
     }
 
@@ -294,33 +295,32 @@ public class LexicalAnalyser {
         return false;
     }
 
-    // need testing
+    /// need testing
     private boolean isSingleCharacterSeparator(char ch) {
         String regex = "[:;,+\\-*/=><{}()]";
         String character = "" + ch;
         return character.matches(regex);
     }
 
-    // need testing
     private boolean isKeyword(String lex) {
         return keywords.get(lex) != null;
     }
 
-    // need testing
-    private boolean isLexExist(String lex) {
-        return Lexeme.get(lex) != null;
-    }
-
-    // need testing
     private Integer getSpecialLexCode(String lex) {
         return keywords.get(lex);
     }
 
+    // check if there is a lexeme in the list
     private boolean isExist(String lex, List<String> list) {
         return list.indexOf(lex) != -1;
     }
 
-    // need to check
+    /// need testing
+    private boolean isLexExist(String lex) {
+        return Lexeme.get(lex) != null;
+    }
+
+    // returns ordinal number (if exists) / 1 (if not exists) of lexeme from list
     private int getCode(List<String> list, String lex) {
         int code = list.indexOf(lex);
         if (code == -1) code = list.size();
