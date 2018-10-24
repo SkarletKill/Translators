@@ -9,6 +9,7 @@ public class Identifier {
 
     private VariableType type;
     private String name;
+//    private String value;
 
     public Identifier(VariableType type, String name) {
         this.type = type;

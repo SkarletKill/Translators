@@ -6,13 +6,11 @@ public class UnknownSymbolException extends LexicalException {
     private char symbol;
     private int line;
 
-    public UnknownSymbolException(char ch) {
-        this.symbol = ch;
-    }
-
     public UnknownSymbolException(char ch, int line) {
         this.symbol = ch;
         this.line = line;
+
+        super.exclamation();
     }
 
     @Override

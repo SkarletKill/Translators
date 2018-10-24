@@ -3,6 +3,7 @@ package kpi.skarlet.cad;
 import kpi.skarlet.cad.exceptions.LexicalException;
 import kpi.skarlet.cad.exceptions.lexical.IdentifierRedeclarationException;
 import kpi.skarlet.cad.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
+import kpi.skarlet.cad.exceptions.lexical.UnexpectedLexemeException;
 import kpi.skarlet.cad.exceptions.lexical.UnknownSymbolException;
 
 import java.io.BufferedReader;
@@ -26,17 +27,14 @@ public class LexicalAnalyser {
     private static final int IDN_CODE = 101;
     private static final int CON_CODE = 102;
 
-    private static ArrayList<String> labelList = new ArrayList<>();
-    private static ArrayList<Identifier> identifierList = Identifier.getIdnList();
-    private static ArrayList<String> constantList = new ArrayList<>();
+    private static List<String> labelList = new ArrayList<>();
+    private static List<Identifier> identifierList = Identifier.getIdnList();
+    private static List<String> constantList = new ArrayList<>();
 
-    private static int LEX_CODE = 1;
     private static int LINE_NUMBER = 1;
     private static char ch;
     private static String lex = "";
     private static boolean HAS_TO_READ = true;
-
-//    Function<Function<>, Function<>> call_f = func -> func(nextChar(), lex+ch);
 
     public static void main(String[] args) {
         try {
@@ -49,7 +47,7 @@ public class LexicalAnalyser {
             while (true);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (UnknownSymbolException e) {
+        } catch (LexicalException e) {
             System.err.println(e.getMessage());
         }
     }
@@ -57,9 +55,9 @@ public class LexicalAnalyser {
     private char nextChar() throws IOException {
         int ch = br.read();
         if (ch == -1) {
+            // closing the program
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             StackTraceElement place = stackTrace[2];
-            System.out.println();
             System.out.println("Last state: " + place.getMethodName());
             Lexeme.printTable();
             System.exit(1);
@@ -67,7 +65,7 @@ public class LexicalAnalyser {
         return LexicalAnalyser.ch = (char) ch;
     }
 
-    private void state1() throws IOException, UnknownSymbolException {
+    private void state1() throws IOException, LexicalException {
         clearLex();
         if (HAS_TO_READ) ch = nextChar();
 //        if (Character.isJavaIdentifierStart(ch)) {
@@ -180,12 +178,12 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state7() {
+    private void state7() throws UnexpectedLexemeException {
         if (ch == CC.equal) {
             lex += ch;
             state13();  // !=
         } else {
-//            throw new UnexpectedLexemeException(lex);
+            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
         }
     }
 
@@ -215,9 +213,6 @@ public class LexicalAnalyser {
             HAS_TO_READ = false;
 //            state1();
         }
-    }
-
-    private void state10() {
     }
 
     private void state11() {
@@ -264,9 +259,9 @@ public class LexicalAnalyser {
         } else if (lexType.equals(LexemeType.CONSTANT)) {
             new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
             if (!isExists(lex, constantList)) constantList.add(lex);
-
         } else {
 //            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
+            System.err.println("ERROR: UNEXPECTED EVENT!");
         }
     }
 
@@ -314,17 +309,17 @@ public class LexicalAnalyser {
         return getCode(constantList, lex);
     }
 
-    /// need testing
     private void checkIdentifier(String idn) {
+        // stub for exceptions
         try {
-            if (ACTIVE_TYPE != null && Identifier.isExists(idn))
+            if (ACTIVE_TYPE != null && Identifier.isExists(idn) && Identifier.get(idn).getType() != null) {
                 throw new IdentifierRedeclarationException(idn, LINE_NUMBER);
-            else if (ACTIVE_TYPE == null && !Identifier.isExists(idn))
+            } else if (ACTIVE_TYPE == null && !Identifier.isExists(idn))
                 throw new IdentifierUsingWithoutDeclarationException(idn, LINE_NUMBER);
 //            else if (ACTIVE_TYPE == null && isExists(idn, identifierList)) // => Використання ідентифікатора
 //            else if (ACTIVE_TYPE != null && !isExists(idn, identifierList)) // => Оголошення ідентифікатора
         } catch (LexicalException le) {
-            System.err.println(le.getMessage());
+//            System.err.println(le.getMessage());
         }
     }
 

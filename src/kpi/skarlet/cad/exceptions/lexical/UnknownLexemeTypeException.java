@@ -6,13 +6,11 @@ public class UnknownLexemeTypeException extends LexicalException {
     private String lex;
     private int line;
 
-    public UnknownLexemeTypeException(String lex) {
-        this.lex = lex;
-    }
-
     public UnknownLexemeTypeException(String lex, int line) {
         this.lex = lex;
         this.line = line;
+
+        super.exclamation();
     }
 
     @Override
