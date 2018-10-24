@@ -30,6 +30,7 @@ public class LexicalAnalyser {
     private static List<String> labelList = new ArrayList<>();
     private static List<Identifier> identifierList = Identifier.getIdnList();
     private static List<String> constantList = new ArrayList<>();
+    private static List<LexicalException> exceptions = new ArrayList<>();
 
     private static int LINE_NUMBER = 1;
     private static char ch;
@@ -47,8 +48,6 @@ public class LexicalAnalyser {
             while (true);
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (LexicalException e) {
-            System.err.println(e.getMessage());
         }
     }
 
@@ -59,13 +58,14 @@ public class LexicalAnalyser {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             StackTraceElement place = stackTrace[2];
             System.out.println("Last state: " + place.getMethodName());
-            Lexeme.printTable();
+//            if (exceptions.isEmpty())
+                Lexeme.printTable();
             System.exit(1);
         }
         return LexicalAnalyser.ch = (char) ch;
     }
 
-    private void state1() throws IOException, LexicalException {
+    private void state1() throws IOException {
         clearLex();
         if (HAS_TO_READ) ch = nextChar();
 //        if (Character.isJavaIdentifierStart(ch)) {
@@ -107,7 +107,7 @@ public class LexicalAnalyser {
             return;
         } else {
             System.out.println();
-            throw new UnknownSymbolException(ch, LINE_NUMBER);
+            exceptions.add(new UnknownSymbolException(ch, LINE_NUMBER));
         }
 
     }
@@ -156,7 +156,7 @@ public class LexicalAnalyser {
             nextChar();
             state12();
         } else {
-//            throw new UnexpectedLexemeException(lex);
+            exceptions.add(new UnexpectedLexemeException(lex, LINE_NUMBER));
         }
     }
 
@@ -178,12 +178,13 @@ public class LexicalAnalyser {
         }
     }
 
-    private void state7() throws UnexpectedLexemeException {
+    private void state7() {
         if (ch == CC.equal) {
             lex += ch;
             state13();  // !=
         } else {
-            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
+            exceptions.add(new UnexpectedLexemeException(lex, LINE_NUMBER));
+            lex = "";
         }
     }
 
@@ -310,17 +311,12 @@ public class LexicalAnalyser {
     }
 
     private void checkIdentifier(String idn) {
-        // stub for exceptions
-        try {
-            if (ACTIVE_TYPE != null && Identifier.isExists(idn) && Identifier.get(idn).getType() != null) {
-                throw new IdentifierRedeclarationException(idn, LINE_NUMBER);
-            } else if (ACTIVE_TYPE == null && !Identifier.isExists(idn))
-                throw new IdentifierUsingWithoutDeclarationException(idn, LINE_NUMBER);
+        if (ACTIVE_TYPE != null && Identifier.isExists(idn) && Identifier.get(idn).getType() != null) {
+            exceptions.add(new IdentifierRedeclarationException(idn, LINE_NUMBER));
+        } else if (ACTIVE_TYPE == null && !Identifier.isExists(idn))
+            exceptions.add(new IdentifierUsingWithoutDeclarationException(idn, LINE_NUMBER));
 //            else if (ACTIVE_TYPE == null && isExists(idn, identifierList)) // => Використання ідентифікатора
 //            else if (ACTIVE_TYPE != null && !isExists(idn, identifierList)) // => Оголошення ідентифікатора
-        } catch (LexicalException le) {
-//            System.err.println(le.getMessage());
-        }
     }
 
     private static Map<String, Integer> initKeywords() {
