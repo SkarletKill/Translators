@@ -1,7 +1,8 @@
+input
 int input, res;
 {
 	cin >> input;
-	if (input > 0) goto exit;
+	if (input > 0) goto exit:;
 	cout << input;
 	res = input/2;
 	cout << res;

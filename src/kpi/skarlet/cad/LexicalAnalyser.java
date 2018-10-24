@@ -1,8 +1,9 @@
 package kpi.skarlet.cad;
 
-import kpi.skarlet.cad.exceptions.UnexpectedLexemeException;
-import kpi.skarlet.cad.exceptions.UnknownLexemeTypeException;
-import kpi.skarlet.cad.exceptions.UnknownSymbolException;
+import kpi.skarlet.cad.exceptions.LexicalException;
+import kpi.skarlet.cad.exceptions.lexical.IdentifierRedeclarationException;
+import kpi.skarlet.cad.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
+import kpi.skarlet.cad.exceptions.lexical.UnknownSymbolException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -26,7 +27,7 @@ public class LexicalAnalyser {
     private static final int CON_CODE = 102;
 
     private static ArrayList<String> labelList = new ArrayList<>();
-    private static ArrayList<String> identifierList = new ArrayList<>();
+    private static ArrayList<Identifier> identifierList = Identifier.getIdnList();
     private static ArrayList<String> constantList = new ArrayList<>();
 
     private static int LEX_CODE = 1;
@@ -66,7 +67,6 @@ public class LexicalAnalyser {
         return LexicalAnalyser.ch = (char) ch;
     }
 
-    // HAS_TO_READ ?
     private void state1() throws IOException, UnknownSymbolException {
         clearLex();
         if (HAS_TO_READ) ch = nextChar();
@@ -123,7 +123,14 @@ public class LexicalAnalyser {
             lex += ch;
             state11();
         } else {
-            addLex(lex, (isKeyword(lex)) ? LexemeType.TERMINAL_SYBOL : LexemeType.IDENTIFIER);
+            if (isKeyword(lex)) {
+                if (getSpecialLexCode(lex) == 1) ACTIVE_TYPE = VariableType.INT;
+                else if (getSpecialLexCode(lex) == 2) ACTIVE_TYPE = VariableType.FLOAT;
+                addLex(lex, LexemeType.TERMINAL_SYBOL);
+            } else {
+                checkIdentifier(lex);
+                addLex(lex, LexemeType.IDENTIFIER);
+            }
             HAS_TO_READ = false;
 //            state1();
         }
@@ -244,18 +251,20 @@ public class LexicalAnalyser {
     // it's only emulate a nice-working function
     private void addLex(String lex, LexemeType lexType) {
         if (lexType.equals(LexemeType.TERMINAL_SYBOL)) {
-            if (getSpecialLexCode(lex) == 1) ACTIVE_TYPE = VariableType.INT;
-            else if (getSpecialLexCode(lex) == 2) ACTIVE_TYPE = VariableType.FLOAT;
             new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
+
         } else if (lexType.equals(LexemeType.LABEL)) {
             new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
-            if (!isExist(lex, labelList)) labelList.add(lex);
+            if (!isExists(lex, labelList)) labelList.add(lex);
+
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {
             new Lexeme(lex, LINE_NUMBER, IDN_CODE, getIdentifierCode(lex));
-            if (!isExist(lex, identifierList)) identifierList.add(lex);
+            if (!Identifier.isExists(lex)) identifierList.add(new Identifier(ACTIVE_TYPE, lex));
+
         } else if (lexType.equals(LexemeType.CONSTANT)) {
             new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
-            if (!isExist(lex, constantList)) constantList.add(lex);
+            if (!isExists(lex, constantList)) constantList.add(lex);
+
         } else {
 //            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
         }
@@ -267,7 +276,6 @@ public class LexicalAnalyser {
         return false;
     }
 
-    /// need testing
     private boolean isSingleCharacterSeparator(char ch) {
         String regex = "[:;,+\\-*/=><{}()]";
         String character = "" + ch;
@@ -278,18 +286,13 @@ public class LexicalAnalyser {
         return keywords.get(lex) != null;
     }
 
-    private Integer getSpecialLexCode(String lex) {
-        return keywords.get(lex);
-    }
-
     // check if there is a lexeme in the list
-    private boolean isExist(String lex, List<String> list) {
+    private boolean isExists(String lex, List<String> list) {
         return list.indexOf(lex) != -1;
     }
 
-    /// need testing
-    private boolean isLexExist(String lex) {
-        return Lexeme.get(lex) != null;
+    private Integer getSpecialLexCode(String lex) {
+        return keywords.get(lex);
     }
 
     // returns ordinal number (if exists) / 1 (if not exists) of lexeme from list
@@ -304,11 +307,25 @@ public class LexicalAnalyser {
     }
 
     private int getIdentifierCode(String lex) {
-        return getCode(identifierList, lex);
+        return Identifier.getCode(lex);
     }
 
     private int getConstantCode(String lex) {
         return getCode(constantList, lex);
+    }
+
+    /// need testing
+    private void checkIdentifier(String idn) {
+        try {
+            if (ACTIVE_TYPE != null && Identifier.isExists(idn))
+                throw new IdentifierRedeclarationException(idn, LINE_NUMBER);
+            else if (ACTIVE_TYPE == null && !Identifier.isExists(idn))
+                throw new IdentifierUsingWithoutDeclarationException(idn, LINE_NUMBER);
+//            else if (ACTIVE_TYPE == null && isExists(idn, identifierList)) // => Використання ідентифікатора
+//            else if (ACTIVE_TYPE != null && !isExists(idn, identifierList)) // => Оголошення ідентифікатора
+        } catch (LexicalException le) {
+            System.err.println(le.getMessage());
+        }
     }
 
     private static Map<String, Integer> initKeywords() {
