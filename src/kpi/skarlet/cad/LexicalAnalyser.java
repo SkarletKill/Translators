@@ -18,24 +18,24 @@ public class LexicalAnalyser {
     private static CharacterConstants CC;
     private static BufferedReader br;
 
-    private static final Map<String, Integer> keywords = initKeywords();
+    private final Map<String, Integer> keywords = initKeywords();
 
     private static final String EMPTY_LEX = "";
-    private static VariableType ACTIVE_TYPE;
+    private VariableType ACTIVE_TYPE;
 
     private static final int LBL_CODE = 100;
     private static final int IDN_CODE = 101;
     private static final int CON_CODE = 102;
 
-    private static List<String> labelList = new ArrayList<>();
-    private static List<Identifier> identifierList = Identifier.getIdnList();
-    private static List<String> constantList = new ArrayList<>();
-    private static List<LexicalException> exceptions = new ArrayList<>();
+    private List<String> labelList = new ArrayList<>();
+    private List<Identifier> identifierList = Identifier.getIdnList();
+    private List<String> constantList = new ArrayList<>();
+    private List<LexicalException> exceptions = new ArrayList<>();
 
-    private static int LINE_NUMBER = 1;
-    private static char ch;
-    private static String lex = "";
-    private static boolean HAS_TO_READ = true;
+    private int LINE_NUMBER = 1;
+    private char ch;
+    private String lex = "";
+    private boolean HAS_TO_READ = true;
 
     public static void main(String[] args) {
         try {
@@ -58,11 +58,11 @@ public class LexicalAnalyser {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             StackTraceElement place = stackTrace[2];
             System.out.println("Last state: " + place.getMethodName());
-//            if (exceptions.isEmpty())
+            if (exceptions.isEmpty())
                 Lexeme.printTable();
-            System.exit(1);
+            System.exit(0);
         }
-        return LexicalAnalyser.ch = (char) ch;
+        return this.ch = (char) ch;
     }
 
     private void state1() throws IOException {
@@ -97,6 +97,10 @@ public class LexicalAnalyser {
             lex += ch;
             nextChar();
             state9();
+        } else if (ch == CC.minus) {
+            lex += ch;
+            nextChar();
+            state10();
         } else if (isSingleCharacterSeparator(ch)) {
             lex += ch;
             state5();
@@ -106,7 +110,6 @@ public class LexicalAnalyser {
             // go to state 1
             return;
         } else {
-            System.out.println();
             exceptions.add(new UnknownSymbolException(ch, LINE_NUMBER));
         }
 
@@ -124,7 +127,7 @@ public class LexicalAnalyser {
             if (isKeyword(lex)) {
                 if (getSpecialLexCode(lex) == 1) ACTIVE_TYPE = VariableType.INT;
                 else if (getSpecialLexCode(lex) == 2) ACTIVE_TYPE = VariableType.FLOAT;
-                addLex(lex, LexemeType.TERMINAL_SYBOL);
+                addLex(lex, LexemeType.TERMINAL_SYMBOL);
             } else {
                 checkIdentifier(lex);
                 addLex(lex, LexemeType.IDENTIFIER);
@@ -162,7 +165,7 @@ public class LexicalAnalyser {
 
     private void state5() {
         if (ch == CC.semicolon && ACTIVE_TYPE != null) ACTIVE_TYPE = null;
-        addLex(lex, LexemeType.TERMINAL_SYBOL); // OP
+        addLex(lex, LexemeType.TERMINAL_SYMBOL); // OP
         HAS_TO_READ = true;
 //        state1();
     }
@@ -172,7 +175,7 @@ public class LexicalAnalyser {
             lex += ch;
             state13();  // ==
         } else {
-            addLex(lex, LexemeType.TERMINAL_SYBOL); // =
+            addLex(lex, LexemeType.TERMINAL_SYMBOL); // =
             HAS_TO_READ = false;
 //            state1();
         }
@@ -184,7 +187,7 @@ public class LexicalAnalyser {
             state13();  // !=
         } else {
             exceptions.add(new UnexpectedLexemeException(lex, LINE_NUMBER));
-            lex = "";
+            lex = EMPTY_LEX;
         }
     }
 
@@ -196,7 +199,7 @@ public class LexicalAnalyser {
             lex += ch;
             state13();  // >=
         } else {
-            addLex(lex, LexemeType.TERMINAL_SYBOL); // >
+            addLex(lex, LexemeType.TERMINAL_SYMBOL); // >
             HAS_TO_READ = false;
 //            state1();
         }
@@ -210,9 +213,21 @@ public class LexicalAnalyser {
             lex += ch;
             state13();  // <=
         } else {
-            addLex(lex, LexemeType.TERMINAL_SYBOL);     // <
+            addLex(lex, LexemeType.TERMINAL_SYMBOL);     // <
             HAS_TO_READ = false;
 //            state1();
+        }
+    }
+
+    private void state10() throws IOException {
+        if (Character.isDigit(ch)) {
+            lex += ch;
+            nextChar();
+            state3();
+        } else {
+            addLex(lex, LexemeType.TERMINAL_SYMBOL);     // -
+            HAS_TO_READ = false;
+//            state1()
         }
     }
 
@@ -235,7 +250,7 @@ public class LexicalAnalyser {
     }
 
     private void state13() {
-        addLex(lex, LexemeType.TERMINAL_SYBOL);
+        addLex(lex, LexemeType.TERMINAL_SYMBOL);
         HAS_TO_READ = true;
 //        state1();
     }
@@ -244,9 +259,8 @@ public class LexicalAnalyser {
         lex = "";
     }
 
-    // it's only emulate a nice-working function
     private void addLex(String lex, LexemeType lexType) {
-        if (lexType.equals(LexemeType.TERMINAL_SYBOL)) {
+        if (lexType.equals(LexemeType.TERMINAL_SYMBOL)) {
             new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
 
         } else if (lexType.equals(LexemeType.LABEL)) {
@@ -273,7 +287,7 @@ public class LexicalAnalyser {
     }
 
     private boolean isSingleCharacterSeparator(char ch) {
-        String regex = "[:;,+\\-*/=><{}()]";
+        String regex = "[:;,+*/=><{}()]";   // deleted \\-
         String character = "" + ch;
         return character.matches(regex);
     }

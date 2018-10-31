@@ -4,5 +4,5 @@ public enum LexemeType {
     LABEL,
     IDENTIFIER,
     CONSTANT,
-    TERMINAL_SYBOL
+    TERMINAL_SYMBOL
 }

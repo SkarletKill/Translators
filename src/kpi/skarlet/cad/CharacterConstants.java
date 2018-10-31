@@ -8,5 +8,6 @@ public interface CharacterConstants {
     char less = '<';
     char colon = ':';
     char semicolon = ';';
+    char minus = '-';
 
 }
