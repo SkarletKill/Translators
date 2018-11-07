@@ -10,9 +10,7 @@ public class Lexeme {
     private String lexeme;
     private int line;
     private int lexemeCode;
-    private Integer lblCode = null;
-    private Integer idnCode = null;
-    private Integer conCode = null;
+    private Integer spCode = null;
 
     Lexeme(String lex, int line, int code) {
         lexemes.add(this);
@@ -24,9 +22,7 @@ public class Lexeme {
 
     Lexeme(String lex, int line, int code, int additionCode) {
         this(lex, line, code);
-        if (code == 100) lblCode = additionCode;
-        else if (code == 101) idnCode = additionCode;
-        else if (code == 102) conCode = additionCode;
+        spCode = additionCode;
     }
 
     public List<Lexeme> getList() {
@@ -42,6 +38,11 @@ public class Lexeme {
         } catch (NoSuchElementException ex) {
             return null;
         }
+    }
+
+    public static int getLastCode() {
+        if (lexemes.isEmpty()) return 0;
+        return lexemes.get(lexemes.size() - 1).lexemeCode;
     }
 
     public static void printTable() {
@@ -66,9 +67,10 @@ public class Lexeme {
                     lexeme.line,  // need add
                     lexeme.lexeme,
                     lexeme.lexemeCode,
-                    (lexeme.idnCode != null)? lexeme.idnCode: "",
-                    (lexeme.conCode != null)? lexeme.conCode: "",
-                    (lexeme.lblCode != null)? lexeme.lblCode: "");
+//                    (lexeme.idnCode != null) ? lexeme.idnCode : "",
+                    (lexeme.lexemeCode != 101 || lexeme.spCode == null) ? "" : lexeme.spCode,
+                    (lexeme.lexemeCode != 102 || lexeme.spCode == null) ? "" : lexeme.spCode,
+                    (lexeme.lexemeCode != 100 || lexeme.spCode == null) ? "" : lexeme.spCode);
             index++;
         }
     }

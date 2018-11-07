@@ -3,7 +3,7 @@ int input, res;
 	cin >> input;
 	if (input > 0) goto exit:;
 	cout << input;
-	res = input/-2;
+	res = -2.-3.-1;
 	cout << res;
 	exit:
 }

@@ -32,6 +32,8 @@ public class LexicalAnalyser {
     private List<String> constantList = new ArrayList<>();
     private List<LexicalException> exceptions = new ArrayList<>();
 
+    private boolean lastConst = false;
+
     private int LINE_NUMBER = 1;
     private char ch;
     private String lex = "";
@@ -44,8 +46,7 @@ public class LexicalAnalyser {
             LexicalAnalyser la = new LexicalAnalyser();
             do {
                 la.state1();
-            }
-            while (true);
+            } while (true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -220,7 +221,7 @@ public class LexicalAnalyser {
     }
 
     private void state10() throws IOException {
-        if (Character.isDigit(ch)) {
+        if (Character.isDigit(ch) && !lastConst) {
             lex += ch;
             nextChar();
             state3();
@@ -260,6 +261,8 @@ public class LexicalAnalyser {
     }
 
     private void addLex(String lex, LexemeType lexType) {
+
+
         if (lexType.equals(LexemeType.TERMINAL_SYMBOL)) {
             new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
 
@@ -272,12 +275,20 @@ public class LexicalAnalyser {
             if (!Identifier.isExists(lex)) identifierList.add(new Identifier(ACTIVE_TYPE, lex));
 
         } else if (lexType.equals(LexemeType.CONSTANT)) {
+            lastConst = true;
             new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
             if (!isExists(lex, constantList)) constantList.add(lex);
         } else {
 //            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
             System.err.println("ERROR: UNEXPECTED EVENT!");
         }
+        checkLastConst();
+    }
+
+    private void checkLastConst() {
+        int c = Lexeme.getLastCode();
+        if (c == 102 || c == 29 || c == 101) lastConst = true;
+        else lastConst = false;
     }
 
     private boolean isWhiteSeparator(char ch) {
