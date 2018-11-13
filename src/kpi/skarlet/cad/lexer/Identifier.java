@@ -1,4 +1,4 @@
-package kpi.skarlet.cad;
+package kpi.skarlet.cad.lexer;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

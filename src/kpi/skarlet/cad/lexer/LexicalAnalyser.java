@@ -1,10 +1,10 @@
-package kpi.skarlet.cad;
+package kpi.skarlet.cad.lexer;
 
-import kpi.skarlet.cad.exceptions.LexicalException;
-import kpi.skarlet.cad.exceptions.lexical.IdentifierRedeclarationException;
-import kpi.skarlet.cad.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
-import kpi.skarlet.cad.exceptions.lexical.UnexpectedLexemeException;
-import kpi.skarlet.cad.exceptions.lexical.UnknownSymbolException;
+import kpi.skarlet.cad.lexer.exceptions.LexicalException;
+import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierRedeclarationException;
+import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
+import kpi.skarlet.cad.lexer.exceptions.lexical.UnexpectedLexemeException;
+import kpi.skarlet.cad.lexer.exceptions.lexical.UnknownSymbolException;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

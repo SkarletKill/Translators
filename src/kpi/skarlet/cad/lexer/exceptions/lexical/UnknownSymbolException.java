@@ -1,13 +1,13 @@
-package kpi.skarlet.cad.exceptions.lexical;
+package kpi.skarlet.cad.lexer.exceptions.lexical;
 
-import kpi.skarlet.cad.exceptions.LexicalException;
+import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
-public class UnknownLexemeTypeException extends LexicalException {
-    private String lex;
+public class UnknownSymbolException extends LexicalException {
+    private char symbol;
     private int line;
 
-    public UnknownLexemeTypeException(String lex, int line) {
-        this.lex = lex;
+    public UnknownSymbolException(char ch, int line) {
+        this.symbol = ch;
         this.line = line;
 
         super.exclamation();
@@ -19,8 +19,8 @@ public class UnknownLexemeTypeException extends LexicalException {
         if (line != 0) msgBuilder.append("line ")
                 .append(line)
                 .append(": ");
-        msgBuilder.append("Unknown type of lexeme '")
-                .append(lex)
+        msgBuilder.append("Unexpected character '")
+                .append(symbol)
                 .append("'");
         return msgBuilder.toString();
     }

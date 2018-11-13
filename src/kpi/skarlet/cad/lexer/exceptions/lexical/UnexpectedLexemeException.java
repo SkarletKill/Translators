@@ -1,6 +1,6 @@
-package kpi.skarlet.cad.exceptions.lexical;
+package kpi.skarlet.cad.lexer.exceptions.lexical;
 
-import kpi.skarlet.cad.exceptions.LexicalException;
+import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
 public class UnexpectedLexemeException extends LexicalException {
     private String lexeme;

@@ -1,12 +1,12 @@
-package kpi.skarlet.cad.exceptions.lexical;
+package kpi.skarlet.cad.lexer.exceptions.lexical;
 
-import kpi.skarlet.cad.exceptions.LexicalException;
+import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
-public class IdentifierRedeclarationException extends LexicalException {
+public class IdentifierUsingWithoutDeclarationException extends LexicalException {
     private String idn;
     private int line;
 
-    public IdentifierRedeclarationException(String lex, int line) {
+    public IdentifierUsingWithoutDeclarationException(String lex, int line) {
         this.idn = lex;
         this.line = line;
 
@@ -21,7 +21,8 @@ public class IdentifierRedeclarationException extends LexicalException {
                 .append(": ");
         msgBuilder.append("Identifier '")
                 .append(idn)
-                .append("' redeclaration");
+                .append("' using without declaration");
         return msgBuilder.toString();
     }
+
 }

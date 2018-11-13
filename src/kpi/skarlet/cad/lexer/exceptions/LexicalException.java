@@ -1,4 +1,4 @@
-package kpi.skarlet.cad.exceptions;
+package kpi.skarlet.cad.lexer.exceptions;
 
 public class LexicalException extends Exception {
 
