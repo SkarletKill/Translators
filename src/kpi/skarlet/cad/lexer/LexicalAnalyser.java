@@ -6,9 +6,7 @@ import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierRedeclarationException
 import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
 import kpi.skarlet.cad.lexer.exceptions.lexical.UnexpectedLexemeException;
 import kpi.skarlet.cad.lexer.exceptions.lexical.UnknownSymbolException;
-import kpi.skarlet.cad.lexer.lexemes.Identifier;
-import kpi.skarlet.cad.lexer.lexemes.Lexeme;
-import kpi.skarlet.cad.lexer.lexemes.LexemeType;
+import kpi.skarlet.cad.lexer.lexemes.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,9 +30,9 @@ public class LexicalAnalyser {
     private static final int CON_CODE = 102;
 
     private List<Lexeme> lexemes = Lexeme.getList();
-    private List<String> labelList = new ArrayList<>();
+    private List<Label> labelList = Label.getList();
     private List<Identifier> identifierList = Identifier.getList();
-    private List<String> constantList = new ArrayList<>();
+    private List<Constant> constantList = Constant.getList();
     private List<LexicalException> exceptions = new ArrayList<>();
 
     private boolean lastConst = false;
@@ -64,7 +62,7 @@ public class LexicalAnalyser {
         }
     }
 
-    public List<String> getLabels() {
+    public List<Label> getLabels() {
         return labelList;
     }
 
@@ -72,7 +70,7 @@ public class LexicalAnalyser {
         return identifierList;
     }
 
-    public List<String> getConstants() {
+    public List<Constant> getConstants() {
         return constantList;
     }
 
@@ -297,9 +295,8 @@ public class LexicalAnalyser {
 
         } else if (lexType.equals(LexemeType.LABEL)) {
             lexeme = new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
-            if (!isExists(lex, labelList)) {
-                String label = new String(lex);
-                labelList.add(label);
+            if (!Label.isExists(lex)) {
+                labelList.add(new Label(lex));
             }
 
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {
@@ -309,7 +306,7 @@ public class LexicalAnalyser {
         } else if (lexType.equals(LexemeType.CONSTANT)) {
             lastConst = true;
             lexeme = new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
-            if (!isExists(lex, constantList)) constantList.add(lex);
+            if (!Constant.isExists(lex)) constantList.add(new Constant(lex));
         } else {
 //            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
             System.err.println("ERROR: UNEXPECTED EVENT!");
@@ -358,7 +355,7 @@ public class LexicalAnalyser {
     }
 
     private int getLabelCode(String lex) {
-        return getCode(labelList, lex);
+        return Label.getCode(lex);
     }
 
     private int getIdentifierCode(String lex) {
@@ -366,7 +363,7 @@ public class LexicalAnalyser {
     }
 
     private int getConstantCode(String lex) {
-        return getCode(constantList, lex);
+        return Constant. getCode(lex);
     }
 
     private void checkIdentifier(String idn) {
