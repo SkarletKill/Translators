@@ -45,6 +45,9 @@ public class LexicalAnalyser {
     public static void main(String[] args) {
         LexicalAnalyser lexer = new LexicalAnalyser();
         lexer.run();
+        lexer.run();
+        lexer.clear();
+        lexer.run();
         System.out.println();
     }
 
@@ -416,6 +419,14 @@ public class LexicalAnalyser {
 //                put("CON", 102);
             }
         };
+    }
+
+    public void clear(){
+        lexemes.clear();
+        identifierList.clear();
+        constantList.clear();
+        labelList.clear();
+        exceptions.clear();
     }
 
 }

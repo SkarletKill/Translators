@@ -1,16 +1,10 @@
 package kpi.skarlet.cad.synzer;
 
-import org.apache.commons.io.FileUtils;
-
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 
 public class SynzerPanel extends JPanel {
 
@@ -93,7 +87,9 @@ public class SynzerPanel extends JPanel {
         return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                if (MainWindow.getLexer().getExceptions().isEmpty())
+                    MainWindow.getLexer().run();
+//                if(lexer)
             }
         };
     }

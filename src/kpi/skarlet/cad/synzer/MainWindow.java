@@ -13,10 +13,12 @@ import java.awt.event.ActionListener;
 public class MainWindow extends JFrame {
     private final int VERTICAL_BORDER = 0;
     private final int HORIZONTAL_BORDER = 10;
+    private final int WIDTH = 600;
+    private final int HEIGHT = 400;
 //    private final int WIDTH_SCREEN = 1366;
 //    private final int HEIGHT_SCREEN = 768;
 
-    LexicalAnalyser lexer;
+    private static LexicalAnalyser lexer;
 
 
     private AbstractBorder border = createBorder(VERTICAL_BORDER, HORIZONTAL_BORDER, VERTICAL_BORDER, HORIZONTAL_BORDER);
@@ -28,8 +30,6 @@ public class MainWindow extends JFrame {
     JRadioButton rb_selectProgramText;
     JRadioButton rb_analyzeProgramText;
 
-//    ActionListener radioListener = createNewRBListener();
-
     public MainWindow() {
         setTitle("Synzer");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -39,7 +39,6 @@ public class MainWindow extends JFrame {
 
         setLayout(new BorderLayout());
         init();
-        lexer.run();
 
         setVisible(true);
     }
@@ -80,6 +79,7 @@ public class MainWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (lexerV) {
                     centralPanel = lexerPanel;
+                    lexer.clear();
                 }
                 if (synzerV) {
                     centralPanel = synzerPanel;
@@ -91,5 +91,9 @@ public class MainWindow extends JFrame {
                 synzerPanel.setVisible(synzerV);
             }
         };
+    }
+
+    public static LexicalAnalyser getLexer() {
+        return lexer;
     }
 }
