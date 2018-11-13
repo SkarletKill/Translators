@@ -1,5 +1,7 @@
 package kpi.skarlet.cad.synzer;
 
+import kpi.skarlet.cad.lexer.LexicalAnalyser;
+
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
@@ -9,16 +11,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame {
-    private final int DOT_SIZE = 16;
     private final int VERTICAL_BORDER = 0;
     private final int HORIZONTAL_BORDER = 10;
-    private final int WIDTH = 30 * DOT_SIZE + VERTICAL_BORDER;
-    private final int HEIGHT = 20 * DOT_SIZE + VERTICAL_BORDER + 7;
-    private final int WIDTH_SCREEN = 1366;
-    private final int HEIGHT_SCREEN = 768;
+//    private final int WIDTH_SCREEN = 1366;
+//    private final int HEIGHT_SCREEN = 768;
 
-    private AbstractBorder border = new CompoundBorder(new EmptyBorder(VERTICAL_BORDER, HORIZONTAL_BORDER, VERTICAL_BORDER, HORIZONTAL_BORDER), new EmptyBorder(0, 0, 0, 0));
+    LexicalAnalyser lexer;
 
+
+    private AbstractBorder border = createBorder(VERTICAL_BORDER, HORIZONTAL_BORDER, VERTICAL_BORDER, HORIZONTAL_BORDER);
 
     JPanel lexerPanel = new LexerPanel();
     JPanel synzerPanel = new SynzerPanel();
@@ -38,6 +39,7 @@ public class MainWindow extends JFrame {
 
         setLayout(new BorderLayout());
         init();
+        lexer.run();
 
         setVisible(true);
     }
@@ -47,6 +49,8 @@ public class MainWindow extends JFrame {
     }
 
     private void init() {
+        lexer = new LexicalAnalyser();
+
         rb_selectProgramText = new JRadioButton("Program text entry");
         rb_analyzeProgramText = new JRadioButton("Analyze the program code");
         ButtonGroup radioButtons = new ButtonGroup();
@@ -64,6 +68,10 @@ public class MainWindow extends JFrame {
 
         centralPanel = lexerPanel;
         add(centralPanel, BorderLayout.CENTER);
+    }
+
+    public static CompoundBorder createBorder(int top, int left, int bottom, int right) {
+        return new CompoundBorder(new EmptyBorder(top, left, bottom, right), new EmptyBorder(0, 0, 0, 0));
     }
 
     private ActionListener createNewRBListener(boolean lexerV, boolean synzerV) {

@@ -1,10 +1,14 @@
 package kpi.skarlet.cad.lexer;
 
+import kpi.skarlet.cad.lexer.exceptions.EndOfFileException;
 import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierRedeclarationException;
 import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
 import kpi.skarlet.cad.lexer.exceptions.lexical.UnexpectedLexemeException;
 import kpi.skarlet.cad.lexer.exceptions.lexical.UnknownSymbolException;
+import kpi.skarlet.cad.lexer.lexemes.Identifier;
+import kpi.skarlet.cad.lexer.lexemes.Lexeme;
+import kpi.skarlet.cad.lexer.lexemes.LexemeType;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -27,8 +31,9 @@ public class LexicalAnalyser {
     private static final int IDN_CODE = 101;
     private static final int CON_CODE = 102;
 
+    private List<Lexeme> lexemes = Lexeme.getList();
     private List<String> labelList = new ArrayList<>();
-    private List<Identifier> identifierList = Identifier.getIdnList();
+    private List<Identifier> identifierList = Identifier.getList();
     private List<String> constantList = new ArrayList<>();
     private List<LexicalException> exceptions = new ArrayList<>();
 
@@ -40,6 +45,12 @@ public class LexicalAnalyser {
     private boolean HAS_TO_READ = true;
 
     public static void main(String[] args) {
+        LexicalAnalyser lexer = new LexicalAnalyser();
+        lexer.run();
+        System.out.println();
+    }
+
+    public boolean run() {
         try {
             br = new BufferedReader(new FileReader("res/program.txt"));
 
@@ -48,8 +59,25 @@ public class LexicalAnalyser {
                 la.state1();
             } while (true);
         } catch (IOException e) {
-            e.printStackTrace();
+            if (e instanceof EndOfFileException) return true;
+            else return false;
         }
+    }
+
+    public List<String> getLabels() {
+        return labelList;
+    }
+
+    public List<Identifier> getIdentifiers() {
+        return identifierList;
+    }
+
+    public List<String> getConstants() {
+        return constantList;
+    }
+
+    public List<LexicalException> getExceptions() {
+        return exceptions;
     }
 
     private char nextChar() throws IOException {
@@ -61,7 +89,8 @@ public class LexicalAnalyser {
             System.out.println("Last state: " + place.getMethodName());
             if (exceptions.isEmpty())
                 Lexeme.printTable();
-            System.exit(0);
+
+            throw new EndOfFileException(place);
         }
         return this.ch = (char) ch;
     }
@@ -261,27 +290,32 @@ public class LexicalAnalyser {
     }
 
     private void addLex(String lex, LexemeType lexType) {
-
+        Lexeme lexeme = null;
 
         if (lexType.equals(LexemeType.TERMINAL_SYMBOL)) {
-            new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
+            lexeme = new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
 
         } else if (lexType.equals(LexemeType.LABEL)) {
-            new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
-            if (!isExists(lex, labelList)) labelList.add(lex);
+            lexeme = new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
+            if (!isExists(lex, labelList)) {
+                String label = new String(lex);
+                labelList.add(label);
+            }
 
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {
-            new Lexeme(lex, LINE_NUMBER, IDN_CODE, getIdentifierCode(lex));
+            lexeme = new Lexeme(lex, LINE_NUMBER, IDN_CODE, getIdentifierCode(lex));
             if (!Identifier.isExists(lex)) identifierList.add(new Identifier(ACTIVE_TYPE, lex));
 
         } else if (lexType.equals(LexemeType.CONSTANT)) {
             lastConst = true;
-            new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
+            lexeme = new Lexeme(lex, LINE_NUMBER, CON_CODE, getConstantCode(lex));
             if (!isExists(lex, constantList)) constantList.add(lex);
         } else {
 //            throw new UnexpectedLexemeException(lex, LINE_NUMBER);
             System.err.println("ERROR: UNEXPECTED EVENT!");
         }
+
+//        if (lexeme != null) lexemes.add(lexeme);
         checkLastConst();
     }
 

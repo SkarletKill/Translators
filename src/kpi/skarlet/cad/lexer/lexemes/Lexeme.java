@@ -1,4 +1,4 @@
-package kpi.skarlet.cad.lexer;
+package kpi.skarlet.cad.lexer.lexemes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class Lexeme {
     private int lexemeCode;
     private Integer spCode = null;
 
-    Lexeme(String lex, int line, int code) {
+    public Lexeme(String lex, int line, int code) {
         lexemes.add(this);
 
         this.lexeme = lex;
@@ -20,12 +20,12 @@ public class Lexeme {
         this.lexemeCode = code;
     }
 
-    Lexeme(String lex, int line, int code, int additionCode) {
+    public Lexeme(String lex, int line, int code, int additionCode) {
         this(lex, line, code);
         spCode = additionCode;
     }
 
-    public List<Lexeme> getList() {
+    public static List<Lexeme> getList() {
         return lexemes;
     }
 

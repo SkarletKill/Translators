@@ -1,11 +1,14 @@
-package kpi.skarlet.cad.lexer;
+package kpi.skarlet.cad.lexer.lexemes;
+
+import kpi.skarlet.cad.lexer.VariableType;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class Identifier {
-    private static ArrayList<Identifier> idnList = new ArrayList<>();
+    private static List<Identifier> idnList = new ArrayList<>();
 
     private VariableType type;
     private String name;
@@ -35,7 +38,7 @@ public class Identifier {
         return code + 1;
     }
 
-    public static ArrayList<Identifier> getIdnList() {
+    public static List<Identifier> getList() {
         return idnList;
     }
 

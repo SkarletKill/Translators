@@ -1,4 +1,4 @@
-package kpi.skarlet.cad.lexer;
+package kpi.skarlet.cad.lexer.lexemes;
 
 public enum LexemeType {
     LABEL,

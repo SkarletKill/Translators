@@ -20,7 +20,7 @@ public class LexerPanel extends JPanel {
 
     private int hPadding = 10;
     private int vPadding = 10;
-    private AbstractBorder border = createBorder(vPadding, hPadding, vPadding, hPadding);
+    private AbstractBorder border = MainWindow.createBorder(vPadding, hPadding, vPadding, hPadding);
 
     public LexerPanel() {
         setLayout(new BorderLayout());
@@ -40,16 +40,11 @@ public class LexerPanel extends JPanel {
         gridLayout.setHgap(hPadding);
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(gridLayout);
-        buttonsPanel.setBorder(createBorder(0, 0, vPadding, 0));
+        buttonsPanel.setBorder(MainWindow.createBorder(0, 0, vPadding, 0));
         buttonsPanel.add(b_openFile);
         buttonsPanel.add(b_saveIntoFile);
-//        b_openFile.addActionListener(l1);
         add(buttonsPanel, BorderLayout.NORTH);
         add(new JScrollPane(inputingText), BorderLayout.CENTER);
-    }
-
-    private CompoundBorder createBorder(int top, int left, int bottom, int right) {
-        return new CompoundBorder(new EmptyBorder(top, left, bottom, right), new EmptyBorder(0, 0, 0, 0));
     }
 
     private static String readFile(File file, Charset encoding) {

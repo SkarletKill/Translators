@@ -1,6 +1,6 @@
 package kpi.skarlet.cad.lexer.exceptions;
 
-public class LexicalException extends Exception {
+public abstract class LexicalException extends Exception {
 
     protected void exclamation(){
         System.err.println(this.getMessage());
