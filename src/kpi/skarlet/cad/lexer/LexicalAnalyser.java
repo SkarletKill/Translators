@@ -162,8 +162,8 @@ public class LexicalAnalyser {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
             StackTraceElement place = stackTrace[2];
             System.out.println("Last state: " + place.getMethodName());
-            if (exceptions.isEmpty())
-                Lexeme.printTable();
+//            if (exceptions.isEmpty())
+//                Lexeme.printTable();
 
             throw new EOFException();
         }
@@ -372,7 +372,14 @@ public class LexicalAnalyser {
         } else if (lexType.equals(LexemeType.LABEL)) {
             lexeme = new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
             if (!Label.isExists(lex)) {
-                labelList.add(new Label(lex));
+                boolean hasGoto = (Lexeme.getLastCode() == 6);      // goto key code
+                Label label = new Label(lex);
+//                labelList.add(new Label(lex));
+                labelList.add(label);
+                if (hasGoto) label.setFrom(Lexeme.getList().size() - 1);
+                else label.setTo(Lexeme.getList().size() - 1);
+            } else {
+                //
             }
 
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {

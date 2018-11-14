@@ -9,6 +9,9 @@ public class Label {
     private static List<Label> lblList = new ArrayList<>();
 
     private String name;
+    // indexes in lexemeList
+    private Integer fromIndex;
+    private Integer toIndex;
 
     public Label(String name) {
         this.name = name;
@@ -16,6 +19,14 @@ public class Label {
 
     public String getName() {
         return name;
+    }
+
+    public Integer getFromIndex() {
+        return fromIndex;
+    }
+
+    public Integer getToIndex() {
+        return toIndex;
     }
 
     /**
@@ -27,6 +38,14 @@ public class Label {
         } catch (NoSuchElementException ex) {
             return null;
         }
+    }
+
+    public void setFrom(Integer from) {
+        this.fromIndex = from;
+    }
+
+    public void setTo(Integer to) {
+        this.toIndex = to;
     }
 
     public static boolean isExists(String lbl) {
