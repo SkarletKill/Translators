@@ -53,10 +53,7 @@ public class SynzerPanel extends JPanel {
         consButton.addActionListener(lexerProductsListener);
         lblsButton.addActionListener(lexerProductsListener);
 
-//        table = new JTable();
-        table = new JTable(new Object[][]{{"str1", "str2"}, {"2str1", "2str2"}}, new String[]{"col1", "col2"});
-//        table.setTabSize(3);
-//        table.setEditable(false);
+        table = new JTable();
         scrollPane = new JScrollPane(table);
 
         messageField = new JTextArea(2, 0);
@@ -177,7 +174,7 @@ public class SynzerPanel extends JPanel {
 
                 } else {
                     // show lexical exceptions
-                    String[] columnNames = {"#", "# рядка", "Exception"};
+                    String[] columnNames = {"#", "Exception"};
                     Object[][] data = getExceptionsData(lexer);
 
                     TableModel model = new DefaultTableModel(data, columnNames) {
@@ -189,10 +186,11 @@ public class SynzerPanel extends JPanel {
                     table.setModel(model);
                     table.getTableHeader().setUpdateTableInRealTime(false);
                 }
+                table.getColumnModel().getColumn(0).setMaxWidth(30);
             }
 
             private void setColumnWidth() {
-                table.getColumnModel().getColumn(0).setPreferredWidth(10);
+                table.getColumnModel().getColumn(0).setPreferredWidth(30);
                 table.getColumnModel().getColumn(1).setPreferredWidth(35);
                 table.getColumnModel().getColumn(4).setPreferredWidth(35);
                 table.getColumnModel().getColumn(5).setPreferredWidth(35);
@@ -258,7 +256,6 @@ public class SynzerPanel extends JPanel {
                 Stream<LexicalException> exceptionStream = lexer.getExceptions().stream();
                 AtomicInteger i = new AtomicInteger(1);
                 List<Object[]> exceptions = exceptionStream.map(e -> new Object[]{i.getAndIncrement(),
-                        e.getLine(),
                         e.getMessage()}).collect(Collectors.toList());
 
                 Object[][] data = new Object[exceptions.size()][];

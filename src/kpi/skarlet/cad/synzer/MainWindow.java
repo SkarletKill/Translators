@@ -48,7 +48,7 @@ public class MainWindow extends JFrame {
     }
 
     private void init() {
-        lexer = new LexicalAnalyser();
+        lexer = new LexicalAnalyser(lexerPanel.getText());
 
         rb_selectProgramText = new JRadioButton("Program text entry");
         rb_analyzeProgramText = new JRadioButton("Analyze the program code");

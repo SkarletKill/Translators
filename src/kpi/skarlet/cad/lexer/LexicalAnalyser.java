@@ -2,10 +2,7 @@ package kpi.skarlet.cad.lexer;
 
 import kpi.skarlet.cad.lexer.exceptions.EndOfFileException;
 import kpi.skarlet.cad.lexer.exceptions.LexicalException;
-import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierRedeclarationException;
-import kpi.skarlet.cad.lexer.exceptions.lexical.IdentifierUsingWithoutDeclarationException;
-import kpi.skarlet.cad.lexer.exceptions.lexical.UnexpectedLexemeException;
-import kpi.skarlet.cad.lexer.exceptions.lexical.UnknownSymbolException;
+import kpi.skarlet.cad.lexer.exceptions.lexical.*;
 import kpi.skarlet.cad.lexer.lexemes.*;
 
 import java.io.BufferedReader;
@@ -36,7 +33,6 @@ public class LexicalAnalyser {
     private List<Identifier> identifierList = Identifier.getList();
     private List<Constant> constantList = Constant.getList();
     private List<LexicalException> exceptions = LexicalException.getList();
-//    private List<LexicalException> exceptions = new ArrayList<>();
 
     private boolean lastConst = false;
 
@@ -92,11 +88,8 @@ public class LexicalAnalyser {
 
     public boolean run() {
         try {
-            br = new BufferedReader(new FileReader("res/program.txt"));
-
-            LexicalAnalyser la = new LexicalAnalyser();
             do {
-                la.state1();
+                this.state1();
             } while (true);
         } catch (IOException e) {
             if (e instanceof EndOfFileException) return true;
@@ -109,12 +102,12 @@ public class LexicalAnalyser {
             this.text = text;
             this.iterator = 0;
 
-            LexicalAnalyser la = new LexicalAnalyser(text);
             do {
-                la.state1();
+                this.state1();
             } while (true);
         } catch (IOException e) {
-            if (e instanceof EndOfFileException) return true;
+            analyzeLabels();
+            if (e instanceof EndOfFileException && exceptions.isEmpty()) return true;
             else return false;
         }
     }
@@ -370,16 +363,26 @@ public class LexicalAnalyser {
             lexeme = new Lexeme(lex, LINE_NUMBER, getSpecialLexCode(lex));
 
         } else if (lexType.equals(LexemeType.LABEL)) {
+            boolean hasGoto = (Lexeme.getLastCode() == 6);  // goto key code
             lexeme = new Lexeme(lex, LINE_NUMBER, LBL_CODE, getLabelCode(lex));
+
             if (!Label.isExists(lex)) {
-                boolean hasGoto = (Lexeme.getLastCode() == 6);      // goto key code
                 Label label = new Label(lex);
 //                labelList.add(new Label(lex));
                 labelList.add(label);
                 if (hasGoto) label.setFrom(Lexeme.getList().size() - 1);
                 else label.setTo(Lexeme.getList().size() - 1);
             } else {
-                //
+                Label label = Label.get(lex);
+                if (hasGoto && label.getFromIndex() == null) {
+                    label.setFrom(Lexeme.getList().size() - 1);
+                } else if (hasGoto && label.getFromIndex() != null) {
+                    this.exceptions.add(new LabelRedeclarationException(lex, this.LINE_NUMBER));
+                } else if (!hasGoto && label.getToIndex() == null) {
+                    label.setTo(Lexeme.getList().size() - 1);
+                } else if (!hasGoto && label.getToIndex() != null) {
+                    this.exceptions.add(new LabelRecallException(lex, this.LINE_NUMBER));
+                }
             }
 
         } else if (lexType.equals(LexemeType.IDENTIFIER)) {
@@ -458,6 +461,18 @@ public class LexicalAnalyser {
 //            else if (ACTIVE_TYPE != null && !isExists(idn, identifierList)) // => Оголошення ідентифікатора
     }
 
+    private void analyzeLabels() {
+        for (Label label : labelList) {
+            if (label.getFromIndex() == null)
+                exceptions.add(new LabelUsingWithoutDeclarationException(label.getName(), Lexeme.get(label.getName()).getLine()));
+//                exceptions.add(new LabelUsingWithoutDeclarationException(label.getName(), Lexeme.getList().get(label.getToIndex()).getLine()));
+
+            if (label.getToIndex() == null)
+                exceptions.add(new LabelTransitionException(label.getName(), Lexeme.get(label.getName()).getLine()));
+//                exceptions.add(new LabelUsingWithoutDeclarationException(label.getName(), Lexeme.getList().get(label.getFromIndex()).getLine()));
+        }
+    }
+
     private static Map<String, Integer> initKeywords() {
         return new HashMap<>() {
             {
@@ -502,12 +517,18 @@ public class LexicalAnalyser {
     }
 
     public void clear() {
-        text = "";
         lexemes.clear();
         identifierList.clear();
         constantList.clear();
         labelList.clear();
         exceptions.clear();
+
+        text = "";
+        LINE_NUMBER = 1;
+        ACTIVE_TYPE = null;
+        lastConst = false;
+        hasFile = false;
+        HAS_TO_READ = true;
     }
 
 }
