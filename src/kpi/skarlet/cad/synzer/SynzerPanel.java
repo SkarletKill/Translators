@@ -203,11 +203,11 @@ public class SynzerPanel extends JPanel {
                 AtomicInteger i = new AtomicInteger(1);
                 List<Object[]> lexemes = lexemeStream.map(l -> new Object[]{i.getAndIncrement(),
                         l.getLine(),
-                        l.getLexemeName(),
-                        l.getLexemeCode(),
-                        (l.getLexemeCode() == LexicalAnalyser.IDN_CODE) ? l.getSpCode() : "",
-                        (l.getLexemeCode() == LexicalAnalyser.CON_CODE) ? l.getSpCode() : "",
-                        (l.getLexemeCode() == LexicalAnalyser.LBL_CODE) ? l.getSpCode() : ""}).collect(Collectors.toList());
+                        l.getName(),
+                        l.getCode(),
+                        (l.getCode() == LexicalAnalyser.IDN_CODE) ? l.getSpCode() : "",
+                        (l.getCode() == LexicalAnalyser.CON_CODE) ? l.getSpCode() : "",
+                        (l.getCode() == LexicalAnalyser.LBL_CODE) ? l.getSpCode() : ""}).collect(Collectors.toList());
 
                 Object[][] data = new Object[lexemes.size()][];
                 lexemes.toArray(data);

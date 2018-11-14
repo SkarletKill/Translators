@@ -25,7 +25,7 @@ public class Lexeme {
         spCode = additionCode;
     }
 
-    public String getLexemeName() {
+    public String getName() {
         return lexeme;
     }
 
@@ -33,7 +33,7 @@ public class Lexeme {
         return line;
     }
 
-    public int getLexemeCode() {
+    public int getCode() {
         return lexemeCode;
     }
 
