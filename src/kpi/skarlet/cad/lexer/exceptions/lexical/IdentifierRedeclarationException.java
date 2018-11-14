@@ -4,13 +4,17 @@ import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
 public class IdentifierRedeclarationException extends LexicalException {
     private String idn;
-    private int line;
 
     public IdentifierRedeclarationException(String lex, int line) {
         this.idn = lex;
         this.line = line;
 
         super.exclamation();
+    }
+
+    @Override
+    public int getLine() {
+        return super.getLine();
     }
 
     @Override

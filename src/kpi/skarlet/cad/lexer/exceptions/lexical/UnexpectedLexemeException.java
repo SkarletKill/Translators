@@ -4,7 +4,6 @@ import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
 public class UnexpectedLexemeException extends LexicalException {
     private String lexeme;
-    private int line;
 
     public UnexpectedLexemeException(String lex, int line) {
         this.lexeme = lex;

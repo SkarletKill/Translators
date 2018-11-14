@@ -4,7 +4,6 @@ import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
 public class IdentifierUsingWithoutDeclarationException extends LexicalException {
     private String idn;
-    private int line;
 
     public IdentifierUsingWithoutDeclarationException(String lex, int line) {
         this.idn = lex;

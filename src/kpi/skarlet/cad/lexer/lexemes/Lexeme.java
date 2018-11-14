@@ -25,6 +25,22 @@ public class Lexeme {
         spCode = additionCode;
     }
 
+    public String getLexemeName() {
+        return lexeme;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public int getLexemeCode() {
+        return lexemeCode;
+    }
+
+    public Integer getSpCode() {
+        return spCode;
+    }
+
     public static List<Lexeme> getList() {
         return lexemes;
     }

@@ -4,7 +4,6 @@ import kpi.skarlet.cad.lexer.exceptions.LexicalException;
 
 public class UnknownSymbolException extends LexicalException {
     private char symbol;
-    private int line;
 
     public UnknownSymbolException(char ch, int line) {
         this.symbol = ch;

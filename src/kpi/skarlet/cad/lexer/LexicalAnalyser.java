@@ -11,7 +11,6 @@ import kpi.skarlet.cad.lexer.lexemes.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,15 +24,16 @@ public class LexicalAnalyser {
     private static final String EMPTY_LEX = "";
     private VariableType ACTIVE_TYPE;
 
-    private static final int LBL_CODE = 100;
-    private static final int IDN_CODE = 101;
-    private static final int CON_CODE = 102;
+    public static final int LBL_CODE = 100;
+    public static final int IDN_CODE = 101;
+    public static final int CON_CODE = 102;
 
     private List<Lexeme> lexemes = Lexeme.getList();
     private List<Label> labelList = Label.getList();
     private List<Identifier> identifierList = Identifier.getList();
     private List<Constant> constantList = Constant.getList();
-    private List<LexicalException> exceptions = new ArrayList<>();
+    private List<LexicalException> exceptions = LexicalException.getList();
+//    private List<LexicalException> exceptions = new ArrayList<>();
 
     private boolean lastConst = false;
 
@@ -63,6 +63,10 @@ public class LexicalAnalyser {
             if (e instanceof EndOfFileException) return true;
             else return false;
         }
+    }
+
+    public List<Lexeme> getLexemes() {
+        return lexemes;
     }
 
     public List<Label> getLabels() {
