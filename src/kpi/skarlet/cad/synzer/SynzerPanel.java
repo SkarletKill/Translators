@@ -2,6 +2,9 @@ package kpi.skarlet.cad.synzer;
 
 import kpi.skarlet.cad.lexer.LexicalAnalyser;
 import kpi.skarlet.cad.lexer.exceptions.LexicalException;
+import kpi.skarlet.cad.lexer.lexemes.Constant;
+import kpi.skarlet.cad.lexer.lexemes.Identifier;
+import kpi.skarlet.cad.lexer.lexemes.Label;
 import kpi.skarlet.cad.lexer.lexemes.Lexeme;
 
 import javax.swing.*;
@@ -106,7 +109,7 @@ public class SynzerPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 LexicalAnalyser lexer = MainWindow.getLexer();
                 if (lexer.getLexemes().isEmpty())
-                    lexer.run();
+                    lexer.run(MainWindow.getLexerPanel().getText());
                 if (lexer.getExceptions().isEmpty()) {
                     if (e.getSource() == lexemesButton) {
                         String[] columnNames = {"#",
@@ -129,6 +132,47 @@ public class SynzerPanel extends JPanel {
                         table.getTableHeader().setUpdateTableInRealTime(false);
 
                         setColumnWidth();
+                    } else if (e.getSource() == idnsButton) {
+                        String[] columnNames = {"#",
+                                "Name",
+                                "Type",};
+                        Object[][] data = getIdentifiersData(lexer);
+
+                        TableModel model = new DefaultTableModel(data, columnNames) {
+                            @Override
+                            public boolean isCellEditable(int row, int column) {
+                                return false;
+                            }
+                        };
+                        table.setModel(model);
+                        table.getTableHeader().setUpdateTableInRealTime(false);
+                    } else if (e.getSource() == consButton) {
+                        String[] columnNames = {"#",
+                                "Type",
+                                "Value",};
+                        Object[][] data = getConstantsData(lexer);
+
+                        TableModel model = new DefaultTableModel(data, columnNames) {
+                            @Override
+                            public boolean isCellEditable(int row, int column) {
+                                return false;
+                            }
+                        };
+                        table.setModel(model);
+                        table.getTableHeader().setUpdateTableInRealTime(false);
+                    } else if (e.getSource() == lblsButton) {
+                        String[] columnNames = {"#",
+                                "Name"};
+                        Object[][] data = getLabelsData(lexer);
+
+                        TableModel model = new DefaultTableModel(data, columnNames) {
+                            @Override
+                            public boolean isCellEditable(int row, int column) {
+                                return false;
+                            }
+                        };
+                        table.setModel(model);
+                        table.getTableHeader().setUpdateTableInRealTime(false);
                     }
 
                 } else {
@@ -169,6 +213,44 @@ public class SynzerPanel extends JPanel {
 
                 Object[][] data = new Object[lexemes.size()][];
                 lexemes.toArray(data);
+                return data;
+            }
+
+            private Object[][] getIdentifiersData(LexicalAnalyser lexer) {
+                Stream<Identifier> idnStream = lexer.getIdentifiers().stream();
+
+                AtomicInteger i = new AtomicInteger(1);
+                List<Object[]> identifiers = idnStream.map(l -> new Object[]{i.getAndIncrement(),
+                        l.getName(),
+                        l.getType()}).collect(Collectors.toList());
+
+                Object[][] data = new Object[identifiers.size()][];
+                identifiers.toArray(data);
+                return data;
+            }
+
+            private Object[][] getConstantsData(LexicalAnalyser lexer) {
+                Stream<Constant> conStream = lexer.getConstants().stream();
+
+                AtomicInteger i = new AtomicInteger(1);
+                List<Object[]> identifiers = conStream.map(l -> new Object[]{i.getAndIncrement(),
+                        l.getType(),
+                        l.getName()}).collect(Collectors.toList());
+
+                Object[][] data = new Object[identifiers.size()][];
+                identifiers.toArray(data);
+                return data;
+            }
+
+            private Object[][] getLabelsData(LexicalAnalyser lexer) {
+                Stream<Label> lblStream = lexer.getLabels().stream();
+
+                AtomicInteger i = new AtomicInteger(1);
+                List<Object[]> identifiers = lblStream.map(l -> new Object[]{i.getAndIncrement(),
+                        l.getName()}).collect(Collectors.toList());
+
+                Object[][] data = new Object[identifiers.size()][];
+                identifiers.toArray(data);
                 return data;
             }
 

@@ -47,6 +47,10 @@ public class LexerPanel extends JPanel {
         add(new JScrollPane(inputingText), BorderLayout.CENTER);
     }
 
+    public String getText() {
+        return inputingText.getText();
+    }
+
     private static String readFile(File file, Charset encoding) {
         try {
             byte[] encoded = Files.readAllBytes(Paths.get(file.getPath()));

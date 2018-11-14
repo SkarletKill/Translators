@@ -9,8 +9,11 @@ import kpi.skarlet.cad.lexer.exceptions.lexical.UnknownSymbolException;
 import kpi.skarlet.cad.lexer.lexemes.*;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +45,49 @@ public class LexicalAnalyser {
     private String lex = "";
     private boolean HAS_TO_READ = true;
 
+
+    private boolean hasFile = false;
+    private String text = "";
+    private int iterator;
+
+    public LexicalAnalyser() {
+        this.text = readFileAsString("res/program.txt");
+    }
+
+    public LexicalAnalyser(String text) {
+        this.text = text;
+    }
+
+    public static String readFileAsString(String fileName) {
+        String text = "";
+        try {
+            text = new String(Files.readAllBytes(Paths.get(fileName)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return text;
+    }
+
     public static void main(String[] args) {
-        LexicalAnalyser lexer = new LexicalAnalyser();
-        lexer.run();
-        lexer.run();
-        lexer.clear();
-        lexer.run();
-        System.out.println();
+        {
+            LexicalAnalyser lexer = new LexicalAnalyser();
+            lexer.run();
+            System.out.println();
+        }
+//        {
+//            LexicalAnalyser lexer = new LexicalAnalyser();
+//            lexer.run("int input, res;\n" +
+//                    "{\n" +
+//                    "\tcin >> input;\n" +
+//                    "\tif (input > 0) goto exit:;\n" +
+//                    "\tcout << input;\n" +
+//                    "\tres = -2.-3.-1.;\n" +
+//                    "\tcout << res;\n" +
+//                    "\texit:\n" +
+//                    "}");
+//            System.out.println();
+//        }
     }
 
     public boolean run() {
@@ -56,6 +95,21 @@ public class LexicalAnalyser {
             br = new BufferedReader(new FileReader("res/program.txt"));
 
             LexicalAnalyser la = new LexicalAnalyser();
+            do {
+                la.state1();
+            } while (true);
+        } catch (IOException e) {
+            if (e instanceof EndOfFileException) return true;
+            else return false;
+        }
+    }
+
+    public boolean run(String text) {
+        try {
+            this.text = text;
+            this.iterator = 0;
+
+            LexicalAnalyser la = new LexicalAnalyser(text);
             do {
                 la.state1();
             } while (true);
@@ -85,7 +139,7 @@ public class LexicalAnalyser {
         return exceptions;
     }
 
-    private char nextChar() throws IOException {
+    private char nextCharacter() throws IOException {
         int ch = br.read();
         if (ch == -1) {
             // closing the program
@@ -98,6 +152,21 @@ public class LexicalAnalyser {
             throw new EndOfFileException(place);
         }
         return this.ch = (char) ch;
+    }
+
+    private char nextChar() throws EOFException {
+        if (iterator < text.length())
+            return this.ch = text.charAt(iterator++);
+        else {
+            // closing the program
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            StackTraceElement place = stackTrace[2];
+            System.out.println("Last state: " + place.getMethodName());
+            if (exceptions.isEmpty())
+                Lexeme.printTable();
+
+            throw new EOFException();
+        }
     }
 
     private void state1() throws IOException {
@@ -370,7 +439,7 @@ public class LexicalAnalyser {
     }
 
     private int getConstantCode(String lex) {
-        return Constant. getCode(lex);
+        return Constant.getCode(lex);
     }
 
     private void checkIdentifier(String idn) {
@@ -425,7 +494,8 @@ public class LexicalAnalyser {
         };
     }
 
-    public void clear(){
+    public void clear() {
+        text = "";
         lexemes.clear();
         identifierList.clear();
         constantList.clear();

@@ -23,12 +23,12 @@ public class MainWindow extends JFrame {
 
     private AbstractBorder border = createBorder(VERTICAL_BORDER, HORIZONTAL_BORDER, VERTICAL_BORDER, HORIZONTAL_BORDER);
 
-    JPanel lexerPanel = new LexerPanel();
-    JPanel synzerPanel = new SynzerPanel();
-    JPanel centralPanel;
+    private static LexerPanel lexerPanel = new LexerPanel();
+    private static JPanel synzerPanel = new SynzerPanel();
+    private static JPanel centralPanel;
 
-    JRadioButton rb_selectProgramText;
-    JRadioButton rb_analyzeProgramText;
+    private JRadioButton rb_selectProgramText;
+    private JRadioButton rb_analyzeProgramText;
 
     public MainWindow() {
         setTitle("Synzer");
@@ -95,5 +95,9 @@ public class MainWindow extends JFrame {
 
     public static LexicalAnalyser getLexer() {
         return lexer;
+    }
+
+    public static LexerPanel getLexerPanel() {
+        return lexerPanel;
     }
 }

@@ -1,5 +1,8 @@
 package kpi.skarlet.cad.lexer.lexemes;
 
+import kpi.skarlet.cad.lexer.CharacterConstants;
+import kpi.skarlet.cad.lexer.VariableType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -9,13 +12,20 @@ public class Constant {
     private static List<Constant> conList = new ArrayList<>();
 
     private String name;
+    private VariableType type;
 
     public Constant(String name) {
         this.name = name;
+        if (name.indexOf(CharacterConstants.dot) == -1) this.type = VariableType.INT;
+        else this.type = VariableType.FLOAT;
     }
 
     public String getName() {
         return name;
+    }
+
+    public VariableType getType() {
+        return type;
     }
 
     /**

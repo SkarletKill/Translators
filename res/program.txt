@@ -1,9 +1,9 @@
-int input, res, res;
+int input, res;
 {
 	cin >> input;
 	if (input > 0) goto exit:;
 	cout << input;
-	res = -2.-3.-1...;
+	res = -2.-3.-1.;
 	cout << res;
 	exit:
 }
