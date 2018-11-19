@@ -19,7 +19,7 @@ public class MainWindow extends JFrame {
 //    private final int HEIGHT_SCREEN = 768;
 
     private static LexicalAnalyser lexer;
-
+    private static SyntaxAnalyzer synzer;
 
     private AbstractBorder border = createBorder(VERTICAL_BORDER, HORIZONTAL_BORDER, VERTICAL_BORDER, HORIZONTAL_BORDER);
 
@@ -34,7 +34,7 @@ public class MainWindow extends JFrame {
 
 //        lexer = new LexicalAnalyser();
 //        lexer.run();
-//        SyntacticAnalyzer sa = new SyntacticAnalyzer();
+//        synzer = new SyntaxAnalyzer(lexer);
 //        sa.run(lexer);
 
 
@@ -102,6 +102,10 @@ public class MainWindow extends JFrame {
 
     public static LexicalAnalyser getLexer() {
         return lexer;
+    }
+
+    public static SyntaxAnalyzer getSynzer() {
+        return synzer;
     }
 
     public static LexerPanel getLexerPanel() {

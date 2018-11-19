@@ -57,8 +57,10 @@ public class SynzerPanel extends JPanel {
         scrollPane = new JScrollPane(table);
 
         messageField = new JTextArea(2, 0);
+        messageField.setEditable(false);
 
         analyseText = new JButton("Analyse");
+        analyseText.addActionListener(createAnalyseListener());
 
         JPanel buttonsPanel = new JPanel();
         GridLayout gridLayoutButtons = new GridLayout(1, 4);
@@ -260,6 +262,51 @@ public class SynzerPanel extends JPanel {
 
                 Object[][] data = new Object[exceptions.size()][];
                 exceptions.toArray(data);
+                return data;
+            }
+        };
+    }
+
+    private ActionListener createAnalyseListener() {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SyntaxAnalyzer synzer = MainWindow.getSynzer();
+                if (synzer == null) {
+                    LexicalAnalyser lexer = MainWindow.getLexer();
+                    if (lexer.getLexemes().isEmpty())
+                        lexer.run(MainWindow.getLexerPanel().getText());
+                    synzer = new SyntaxAnalyzer(lexer);
+                } else {
+                    synzer.clear();
+                }
+
+                if (!synzer.run()) {
+                    String[] columnNames = {"#", "Exception"};
+                    Object[][] data = getExceptionsData(synzer);
+
+                    TableModel model = new DefaultTableModel(data, columnNames) {
+                        @Override
+                        public boolean isCellEditable(int row, int column) {
+                            return false;
+                        }
+                    };
+                    table.setModel(model);
+                    table.getTableHeader().setUpdateTableInRealTime(false);
+                } else {
+                    messageField.setText("All right");
+                }
+                table.getColumnModel().getColumn(0).setMaxWidth(30);
+            }
+
+            private Object[][] getExceptionsData(SyntaxAnalyzer synzer) {
+                Stream<String> exceptionStream = synzer.getErrors().stream();
+                AtomicInteger i = new AtomicInteger(1);
+                List<Object[]> errors = exceptionStream.map(s -> new Object[]{i.getAndIncrement(),
+                        s}).collect(Collectors.toList());
+
+                Object[][] data = new Object[errors.size()][];
+                errors.toArray(data);
                 return data;
             }
         };
