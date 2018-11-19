@@ -31,6 +31,13 @@ public class MainWindow extends JFrame {
     private JRadioButton rb_analyzeProgramText;
 
     public MainWindow() {
+
+//        lexer = new LexicalAnalyser();
+//        lexer.run();
+//        SyntacticAnalyzer sa = new SyntacticAnalyzer();
+//        sa.run(lexer);
+
+
         setTitle("Synzer");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(WIDTH, HEIGHT);

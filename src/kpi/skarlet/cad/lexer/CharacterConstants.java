@@ -9,5 +9,4 @@ public interface CharacterConstants {
     char colon = ':';
     char semicolon = ';';
     char minus = '-';
-
 }
