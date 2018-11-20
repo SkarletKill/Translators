@@ -597,7 +597,6 @@ public class SyntaxAnalyzer {
     }
 
     public void clear() {
-        this.la.clear();
         this.errors.clear();
         this.i = 0;
     }

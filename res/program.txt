@@ -9,3 +9,4 @@ int input, res;
 	cout << res;
 	exit:;
 }
+int b = 7;

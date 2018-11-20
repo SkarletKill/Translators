@@ -60,7 +60,7 @@ public class SynzerPanel extends JPanel {
         messageField.setEditable(false);
 
         analyseText = new JButton("Analyse");
-        analyseText.addActionListener(createAnalyseListener());
+        analyseText.addActionListener(lexerProductsListener);
 
         JPanel buttonsPanel = new JPanel();
         GridLayout gridLayoutButtons = new GridLayout(1, 4);
@@ -100,6 +100,12 @@ public class SynzerPanel extends JPanel {
 //        gridLayoutMsg.setHgap(10);
 //        message_runPanel.setBorder(createBorder(10, 10, 10, 10));
         add(message_runPanel, BorderLayout.SOUTH);
+    }
+
+    public void clear() {
+        TableModel model = new DefaultTableModel();
+        table.setModel(model);
+        messageField.setText("");
     }
 
     private ActionListener createLexerProductsListener() {
@@ -172,6 +178,29 @@ public class SynzerPanel extends JPanel {
                         };
                         table.setModel(model);
                         table.getTableHeader().setUpdateTableInRealTime(false);
+                    } else if (e.getSource() == analyseText) {
+                        SyntaxAnalyzer synzer = MainWindow.getSynzer();
+                        if (synzer == null) {
+                            synzer = new SyntaxAnalyzer(lexer);
+                        } else {
+                            synzer.clear();
+                        }
+
+                        if (!synzer.run()) {
+                            String[] columnNames = {"#", "Exception"};
+                            Object[][] data = getSyntaxExceptionsData(synzer);
+
+                            TableModel model = new DefaultTableModel(data, columnNames) {
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            table.setModel(model);
+                            table.getTableHeader().setUpdateTableInRealTime(false);
+                        } else {
+                            messageField.setText("All right");
+                        }
                     }
 
                 } else {
@@ -264,42 +293,8 @@ public class SynzerPanel extends JPanel {
                 exceptions.toArray(data);
                 return data;
             }
-        };
-    }
 
-    private ActionListener createAnalyseListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SyntaxAnalyzer synzer = MainWindow.getSynzer();
-                if (synzer == null) {
-                    LexicalAnalyser lexer = MainWindow.getLexer();
-                    if (lexer.getLexemes().isEmpty())
-                        lexer.run(MainWindow.getLexerPanel().getText());
-                    synzer = new SyntaxAnalyzer(lexer);
-                } else {
-                    synzer.clear();
-                }
-
-                if (!synzer.run()) {
-                    String[] columnNames = {"#", "Exception"};
-                    Object[][] data = getExceptionsData(synzer);
-
-                    TableModel model = new DefaultTableModel(data, columnNames) {
-                        @Override
-                        public boolean isCellEditable(int row, int column) {
-                            return false;
-                        }
-                    };
-                    table.setModel(model);
-                    table.getTableHeader().setUpdateTableInRealTime(false);
-                } else {
-                    messageField.setText("All right");
-                }
-                table.getColumnModel().getColumn(0).setMaxWidth(30);
-            }
-
-            private Object[][] getExceptionsData(SyntaxAnalyzer synzer) {
+            private Object[][] getSyntaxExceptionsData(SyntaxAnalyzer synzer) {
                 Stream<String> exceptionStream = synzer.getErrors().stream();
                 AtomicInteger i = new AtomicInteger(1);
                 List<Object[]> errors = exceptionStream.map(s -> new Object[]{i.getAndIncrement(),
@@ -311,4 +306,53 @@ public class SynzerPanel extends JPanel {
             }
         };
     }
+//    private ActionListener createAnalyseListener() {
+//        return new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+////                LexicalAnalyser lexer = MainWindow.getLexer();
+////                if (lexer.getLexemes().isEmpty())
+////                    lexer.run(MainWindow.getLexerPanel().getText());
+//
+//
+//                SyntaxAnalyzer synzer = MainWindow.getSynzer();
+//                if (synzer == null) {
+//                    LexicalAnalyser lexer = MainWindow.getLexer();
+//                    if (lexer.getLexemes().isEmpty())
+//                        lexer.run(MainWindow.getLexerPanel().getText());
+//                    synzer = new SyntaxAnalyzer(lexer);
+//                } else {
+//                    synzer.clear();
+//                }
+//
+//                if (!synzer.run()) {
+//                    String[] columnNames = {"#", "Exception"};
+//                    Object[][] data = getExceptionsData(synzer);
+//
+//                    TableModel model = new DefaultTableModel(data, columnNames) {
+//                        @Override
+//                        public boolean isCellEditable(int row, int column) {
+//                            return false;
+//                        }
+//                    };
+//                    table.setModel(model);
+//                    table.getTableHeader().setUpdateTableInRealTime(false);
+//                } else {
+//                    messageField.setText("All right");
+//                }
+//                table.getColumnModel().getColumn(0).setMaxWidth(30);
+//            }
+//
+//            private Object[][] getExceptionsData(SyntaxAnalyzer synzer) {
+//                Stream<String> exceptionStream = synzer.getErrors().stream();
+//                AtomicInteger i = new AtomicInteger(1);
+//                List<Object[]> errors = exceptionStream.map(s -> new Object[]{i.getAndIncrement(),
+//                        s}).collect(Collectors.toList());
+//
+//                Object[][] data = new Object[errors.size()][];
+//                errors.toArray(data);
+//                return data;
+//            }
+//        };
+//    }
 }

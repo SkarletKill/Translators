@@ -24,7 +24,7 @@ public class MainWindow extends JFrame {
     private AbstractBorder border = createBorder(VERTICAL_BORDER, HORIZONTAL_BORDER, VERTICAL_BORDER, HORIZONTAL_BORDER);
 
     private static LexerPanel lexerPanel = new LexerPanel();
-    private static JPanel synzerPanel = new SynzerPanel();
+    private static SynzerPanel synzerPanel = new SynzerPanel();
     private static JPanel centralPanel;
 
     private JRadioButton rb_selectProgramText;
@@ -56,6 +56,7 @@ public class MainWindow extends JFrame {
 
     private void init() {
         lexer = new LexicalAnalyser(lexerPanel.getText());
+        synzer = new SyntaxAnalyzer(lexer);
 
         rb_selectProgramText = new JRadioButton("Program text entry");
         rb_analyzeProgramText = new JRadioButton("Analyze the program code");
@@ -89,7 +90,9 @@ public class MainWindow extends JFrame {
                     lexer.clear();
                 }
                 if (synzerV) {
+                    synzerPanel.clear();
                     centralPanel = synzerPanel;
+                    synzer.clear();
                 }
                 remove(centralPanel);
                 add(centralPanel);
