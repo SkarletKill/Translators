@@ -2,6 +2,7 @@ package kpi.skarlet.cad.synzer;
 
 import kpi.skarlet.cad.lexer.LexicalAnalyser;
 import kpi.skarlet.cad.lexer.VariableType;
+import kpi.skarlet.cad.lexer.exceptions.EndOfLexemesException;
 import kpi.skarlet.cad.lexer.lexemes.Lexeme;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ public class SyntaxAnalyzer {
         this.la = lexer;
         this.errors = new ArrayList<>();
         this.i = 0;
-        for (int j = 0; j < 5;) System.out.println(j);
     }
 
     public static void main(String[] args) {
@@ -27,10 +27,15 @@ public class SyntaxAnalyzer {
     }
 
     public boolean run() {
-        return program();
+        try {
+            return program();
+        } catch (EndOfLexemesException e) {
+            error(e.getMessage());
+            return false;
+        }
     }
 
-    public boolean program() {
+    public boolean program() throws EndOfLexemesException {
         if (adList()) {
             if (getCurrentLexeme().equals(TS.OPENING_BRACE)) {
                 inc();
@@ -45,7 +50,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean adList() {
+    private boolean adList() throws EndOfLexemesException {
         while (!getCurrentLexeme().equals(TS.OPENING_BRACE)) {
 //            inc();
             if (ad()) {
@@ -63,7 +68,7 @@ public class SyntaxAnalyzer {
         return true;
     }
 
-    private boolean ad() {
+    private boolean ad() throws EndOfLexemesException {
         if (_type()) {
             if (idList()) {
                 return true;
@@ -76,7 +81,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean idList() {
+    private boolean idList() throws EndOfLexemesException {
         if (getCurrentLexemeCode() == 101) {
             inc();
             if (getCurrentLexeme().equals(TS.SEMICOLON)) {
@@ -98,7 +103,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean statementBlock() {
+    private boolean statementBlock() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.OPENING_BRACE)) {
             inc();
             if (operatorList()) {
@@ -117,7 +122,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean operatorList() {
+    private boolean operatorList() throws EndOfLexemesException {
         if (operator()) {
             if (getCurrentLexeme().equals(TS.SEMICOLON)) {
                 inc();
@@ -146,7 +151,7 @@ public class SyntaxAnalyzer {
         return true;
     }
 
-    private boolean operator() {
+    private boolean operator() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.INPUT_OPERATOR)) {
             if (input()) {
                 return true;
@@ -209,7 +214,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean input() {
+    private boolean input() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.INPUT_OPERATOR)) {
             inc();
             if (getCurrentLexeme().equals(TS.INPUT_JOINT)) {
@@ -237,7 +242,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean output() {
+    private boolean output() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.OUTPUT_OPERATOR)) {
             inc();
             if (getCurrentLexeme().equals(TS.OUTPUT_JOINT)) {
@@ -265,7 +270,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean loop() {
+    private boolean loop() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.CYCLE_FOR)) {
             inc();
             if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
@@ -319,7 +324,7 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private boolean conditional() {
+    private boolean conditional() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.CONDITIONAL_OPERATOR)) {
             inc();
             if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
@@ -347,7 +352,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean assignment() {
+    private boolean assignment() throws EndOfLexemesException {
         if (getCurrentLexemeCode() == 101) {
             inc();
             if (getCurrentLexeme().equals(TS.EQUAL)) {
@@ -366,7 +371,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean labelCall() {
+    private boolean labelCall() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.LABEL_START)) {
             inc();
             if (getCurrentLexemeCode() == 100) {
@@ -381,7 +386,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean LE() {
+    private boolean LE() throws EndOfLexemesException {
         if (LT()) {
             while (getCurrentLexeme().equals(TS.OR)) {
                 inc();
@@ -398,7 +403,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean LT() {
+    private boolean LT() throws EndOfLexemesException {
         if (LF()) {
             while (getCurrentLexeme().equals(TS.AND)) {
                 inc();
@@ -415,7 +420,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean LF() {
+    private boolean LF() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
             inc();
             if (LE()) {
@@ -447,7 +452,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean R() {
+    private boolean R() throws EndOfLexemesException {
         if (E()) {
             if (S()) {
                 inc();
@@ -469,7 +474,7 @@ public class SyntaxAnalyzer {
         return getCurrentLexemeCode() >= 17 && getCurrentLexemeCode() <= 22;
     }
 
-    private boolean E() {
+    private boolean E() throws EndOfLexemesException {
         if (T()) {
             while (getCurrentLexeme().equals(TS.PLUS) || getCurrentLexeme().equals(TS.MINUS)) {
                 inc();
@@ -486,7 +491,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean T() {
+    private boolean T() throws EndOfLexemesException {
         if (V()) {
             while (getCurrentLexeme().equals(TS.ASTERISK) || getCurrentLexeme().equals(TS.SLASH)) {
                 inc();
@@ -503,7 +508,7 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean V() {
+    private boolean V() throws EndOfLexemesException {
         if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
             inc();
             return true;
@@ -527,18 +532,17 @@ public class SyntaxAnalyzer {
     }
 
 
-    private int inc() {
+    private int inc() throws EndOfLexemesException {
         if (++i < la.getLexemes().size()) {
             currentLex = la.getLexemes().get(i);        // debug only
             return i;
-        }
-        else {
-            //        throw new EndOfLexemesException();
-            return i;
+        } else {
+            throw new EndOfLexemesException();
+//            return i;
         }
     }
 
-    private boolean _type() {
+    private boolean _type() throws EndOfLexemesException {
         if (getCurrentLexeme().equals(VariableType.INT.toString())) {
             inc();
             return true;
