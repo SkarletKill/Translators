@@ -19,6 +19,7 @@ public class SyntaxAnalyzer {
         this.la = lexer;
         this.errors = new ArrayList<>();
         this.i = 0;
+        for (int j = 0; j < 5;) System.out.println(j);
     }
 
     public static void main(String[] args) {
@@ -60,32 +61,10 @@ public class SyntaxAnalyzer {
             }
         }
         return true;
-
-//        if (ad()) {
-//            while (getCurrentLexeme().equals(TS.SEMICOLON)) {
-//                inc();
-//                if (ad()) {
-//                    if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-//                        inc();
-//                    } else {
-//                        error(EC.MISSING_SEMICOLON);
-//                        return false;
-//                    }
-//                } else {
-//                    error(EC.MISSING_AD);
-//                    return false;
-//                }
-//            }
-//            return true;
-//        } else {
-//            error(EC.MISSING_AD_FIRST);
-//            return false;
-//        }
     }
 
     private boolean ad() {
-        if (getCurrentLexeme().equals(TS.TYPE_INT) || getCurrentLexeme().equals(TS.TYPE_FLOAT)) {
-            inc();
+        if (_type()) {
             if (idList()) {
                 return true;
             } else {
@@ -123,7 +102,6 @@ public class SyntaxAnalyzer {
         if (getCurrentLexeme().equals(TS.OPENING_BRACE)) {
             inc();
             if (operatorList()) {
-//                inc();
                 if (getCurrentLexeme().equals(TS.CLOSING_BRACE)) {
                     inc();
                     return true;
@@ -293,15 +271,12 @@ public class SyntaxAnalyzer {
             if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
                 inc();
                 if (assignment()) {
-                    inc();
                     if (getCurrentLexeme().equals(TS.SEMICOLON)) {
                         inc();
                         if (LE()) {
-                            inc();
                             if (getCurrentLexeme().equals(TS.SEMICOLON)) {
                                 inc();
                                 if (E()) {
-//                                    inc();
                                     if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
                                         inc();
                                         if (statementBlock()) {
@@ -350,7 +325,6 @@ public class SyntaxAnalyzer {
             if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
                 inc();
                 if (LE()) {
-//                    inc();
                     if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
                         inc();
                         if (statementBlock()) {
@@ -445,7 +419,6 @@ public class SyntaxAnalyzer {
         if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
             inc();
             if (LE()) {
-                inc();
                 if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
                     inc();
                     return true;
@@ -476,7 +449,6 @@ public class SyntaxAnalyzer {
 
     private boolean R() {
         if (E()) {
-//            inc();
             if (S()) {
                 inc();
                 if (E()) {
@@ -539,7 +511,6 @@ public class SyntaxAnalyzer {
         if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
             inc();
             if (E()) {
-//                inc();
                 if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
                     return true;
                 } else {
@@ -557,17 +528,21 @@ public class SyntaxAnalyzer {
 
 
     private int inc() {
-        if (++i < la.getLexemes().size())
+        if (++i < la.getLexemes().size()) {
+            currentLex = la.getLexemes().get(i);        // debug only
             return i;
-        else return i;
-//        throw new EndOfLexemesException();
+        }
+        else {
+            //        throw new EndOfLexemesException();
+            return i;
+        }
     }
 
     private boolean _type() {
-        if (getCurrentLexeme().equals(VariableType.INT)) {
+        if (getCurrentLexeme().equals(VariableType.INT.toString())) {
             inc();
             return true;
-        } else if (getCurrentLexeme().equals(VariableType.FLOAT)) {
+        } else if (getCurrentLexeme().equals(VariableType.FLOAT.toString())) {
             inc();
             return true;
         } else {
@@ -577,12 +552,10 @@ public class SyntaxAnalyzer {
     }
 
     private String getCurrentLexeme() {
-        currentLex = la.getLexemes().get(i);        // debug only
         return la.getLexemes().get(i).getName();
     }
 
     private int getCurrentLexemeCode() {
-        currentLex = la.getLexemes().get(i);        // debug only
         return la.getLexemes().get(i).getCode();
     }
 
