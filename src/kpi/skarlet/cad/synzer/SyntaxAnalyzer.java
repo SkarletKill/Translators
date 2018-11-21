@@ -27,21 +27,16 @@ public class SyntaxAnalyzer {
     }
 
     public boolean run() {
-        try {
-            return program();
-        } catch (EndOfLexemesException e) {
-            error(e.getMessage());
-            return false;
-        }
+        return program();
     }
 
-    public boolean program() throws EndOfLexemesException {
+    public boolean program() {
         if (adList()) {
             if (getCurrentLexeme().equals(TS.OPENING_BRACE)) {
-                inc();
+                if (!inc()) return false;
                 if (operatorList()) {
                     if (getCurrentLexeme().equals(TS.CLOSING_BRACE)) {
-                        inc();
+//                        if (!inc()) return false;
                         return true;
                     } else error(EC.MISSING_CLOSING_BRACE);
                 } else error(EC.WRONG_OPERATOR_LIST);
@@ -50,12 +45,12 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean adList() throws EndOfLexemesException {
+    private boolean adList() {
         while (!getCurrentLexeme().equals(TS.OPENING_BRACE)) {
-//            inc();
+//            if (!inc()) return false;
             if (ad()) {
                 if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-                    inc();
+                    if (!inc()) return false;
                 } else {
                     error(EC.MISSING_SEMICOLON);
                     return false;
@@ -68,7 +63,7 @@ public class SyntaxAnalyzer {
         return true;
     }
 
-    private boolean ad() throws EndOfLexemesException {
+    private boolean ad() {
         if (_type()) {
             if (idList()) {
                 return true;
@@ -81,14 +76,14 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean idList() throws EndOfLexemesException {
+    private boolean idList() {
         if (getCurrentLexemeCode() == 101) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.SEMICOLON)) {
                 return true;
             }
             if (getCurrentLexeme().equals(TS.COMMA)) {
-                inc();
+                if (!inc()) return false;
                 if (idList()) {
                     return true;
                 } else {
@@ -103,13 +98,12 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean statementBlock() throws EndOfLexemesException {
+    private boolean statementBlock() {
         if (getCurrentLexeme().equals(TS.OPENING_BRACE)) {
-            inc();
+            if (!inc()) return false;
             if (operatorList()) {
                 if (getCurrentLexeme().equals(TS.CLOSING_BRACE)) {
-                    inc();
-                    return true;
+                    return inc();
                 } else {
                     error(EC.MISSING_CLOSING_BRACE);
                 }
@@ -122,15 +116,15 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean operatorList() throws EndOfLexemesException {
+    private boolean operatorList() {
         if (operator()) {
             if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-                inc();
+                if (!inc()) return false;
 //                while (getCurrentLexeme() != endings) {
                 while (!getCurrentLexeme().equals(TS.CLOSING_BRACE)) {          // !!!
                     if (operator()) {
                         if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-                            inc();
+                            if (!inc()) return false;
                         } else {
                             error(EC.MISSING_SEMICOLON);
                             return false;
@@ -151,7 +145,7 @@ public class SyntaxAnalyzer {
         return true;
     }
 
-    private boolean operator() throws EndOfLexemesException {
+    private boolean operator() {
         if (getCurrentLexeme().equals(TS.INPUT_OPERATOR)) {
             if (input()) {
                 return true;
@@ -207,24 +201,23 @@ public class SyntaxAnalyzer {
         }
 
         if (getCurrentLexemeCode() == 100) {
-            inc();
-            return true;
+            return inc();
         }
 
         return false;
     }
 
-    private boolean input() throws EndOfLexemesException {
+    private boolean input() {
         if (getCurrentLexeme().equals(TS.INPUT_OPERATOR)) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.INPUT_JOINT)) {
-                inc();
+                if (!inc()) return false;
                 if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
-                    inc();
+                    if (!inc()) return false;
                     while (getCurrentLexeme().equals(TS.INPUT_JOINT)) {
-                        inc();
+                        if (!inc()) return false;
                         if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
-                            inc();
+                            if (!inc()) return false;
                         } else {
                             error(EC.EXPECTED_INPUT_VARIABLE);
                         }
@@ -242,17 +235,17 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean output() throws EndOfLexemesException {
+    private boolean output() {
         if (getCurrentLexeme().equals(TS.OUTPUT_OPERATOR)) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.OUTPUT_JOINT)) {
-                inc();
+                if (!inc()) return false;
                 if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
-                    inc();
+                    if (!inc()) return false;
                     while (getCurrentLexeme().equals(TS.OUTPUT_JOINT)) {
-                        inc();
+                        if (!inc()) return false;
                         if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
-                            inc();
+                            if (!inc()) return false;
                         } else {
                             error(EC.EXPECTED_OUTPUT_VARIABLE);
                         }
@@ -270,20 +263,20 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean loop() throws EndOfLexemesException {
+    private boolean loop() {
         if (getCurrentLexeme().equals(TS.CYCLE_FOR)) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
-                inc();
+                if (!inc()) return false;
                 if (assignment()) {
                     if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-                        inc();
+                        if (!inc()) return false;
                         if (LE()) {
                             if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-                                inc();
+                                if (!inc()) return false;
                                 if (E()) {
                                     if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
-                                        inc();
+                                        if (!inc()) return false;
                                         if (statementBlock()) {
                                             return true;
                                         } else {
@@ -324,14 +317,14 @@ public class SyntaxAnalyzer {
         }
     }
 
-    private boolean conditional() throws EndOfLexemesException {
+    private boolean conditional() {
         if (getCurrentLexeme().equals(TS.CONDITIONAL_OPERATOR)) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
-                inc();
+                if (!inc()) return false;
                 if (LE()) {
                     if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
-                        inc();
+                        if (!inc()) return false;
                         if (statementBlock()) {
                             return true;
                         } else {
@@ -352,11 +345,11 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean assignment() throws EndOfLexemesException {
+    private boolean assignment() {
         if (getCurrentLexemeCode() == 101) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.EQUAL)) {
-                inc();
+                if (!inc()) return false;
                 if (E()) {
                     return true;
                 } else {
@@ -371,12 +364,11 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean labelCall() throws EndOfLexemesException {
+    private boolean labelCall() {
         if (getCurrentLexeme().equals(TS.LABEL_START)) {
-            inc();
+            if (!inc()) return false;
             if (getCurrentLexemeCode() == 100) {
-                inc();
-                return true;
+                return inc();
             } else {
                 error(EC.EXPECTED_LABEL);
             }
@@ -386,10 +378,10 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean LE() throws EndOfLexemesException {
+    private boolean LE() {
         if (LT()) {
             while (getCurrentLexeme().equals(TS.OR)) {
-                inc();
+                if (!inc()) return false;
                 if (LT()) {
                     return true;
                 } else {
@@ -403,10 +395,10 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean LT() throws EndOfLexemesException {
+    private boolean LT() {
         if (LF()) {
             while (getCurrentLexeme().equals(TS.AND)) {
-                inc();
+                if (!inc()) return false;
                 if (LF()) {
                     return true;
                 } else {
@@ -420,13 +412,12 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean LF() throws EndOfLexemesException {
+    private boolean LF() {
         if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
-            inc();
+            if (!inc()) return false;
             if (LE()) {
                 if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
-                    inc();
-                    return true;
+                    return inc();
                 } else {
                     error(EC.MISSING_CLOSING_BRACKET);
                     return false;
@@ -437,7 +428,7 @@ public class SyntaxAnalyzer {
             }
         }
         if (getCurrentLexeme().equals(TS.NEGATION)) {
-            inc();
+            if (!inc()) return false;
             // TODO investigate logical expressions
             if (LT()) {
                 return true;
@@ -446,16 +437,13 @@ public class SyntaxAnalyzer {
                 return false;
             }
         }
-        if (R()) {
-            return true;
-        }
-        return false;
+        return R();
     }
 
-    private boolean R() throws EndOfLexemesException {
+    private boolean R() {
         if (E()) {
             if (S()) {
-                inc();
+                if (!inc()) return false;
                 if (E()) {
                     return true;
                 } else {
@@ -474,10 +462,10 @@ public class SyntaxAnalyzer {
         return getCurrentLexemeCode() >= 17 && getCurrentLexemeCode() <= 22;
     }
 
-    private boolean E() throws EndOfLexemesException {
+    private boolean E() {
         if (T()) {
             while (getCurrentLexeme().equals(TS.PLUS) || getCurrentLexeme().equals(TS.MINUS)) {
-                inc();
+                if (!inc()) return false;
                 if (T()) {
                     continue;
                 } else {
@@ -491,10 +479,10 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean T() throws EndOfLexemesException {
+    private boolean T() {
         if (V()) {
             while (getCurrentLexeme().equals(TS.ASTERISK) || getCurrentLexeme().equals(TS.SLASH)) {
-                inc();
+                if (!inc()) return false;
                 if (V()) {
                     continue;
                 } else {
@@ -508,13 +496,12 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-    private boolean V() throws EndOfLexemesException {
+    private boolean V() {
         if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
-            inc();
-            return true;
+            return inc();
         }
         if (getCurrentLexeme().equals(TS.OPENING_BRACKET)) {
-            inc();
+            if (!inc()) return false;
             if (E()) {
                 if (getCurrentLexeme().equals(TS.CLOSING_BRACKET)) {
                     return true;
@@ -531,24 +518,21 @@ public class SyntaxAnalyzer {
         return false;
     }
 
-
-    private int inc() throws EndOfLexemesException {
+    private boolean inc() {
         if (++i < la.getLexemes().size()) {
             currentLex = la.getLexemes().get(i);        // debug only
-            return i;
+            return true;
         } else {
-            throw new EndOfLexemesException();
-//            return i;
+            error(new EndOfLexemesException().getMessage());
+            return false;
         }
     }
 
-    private boolean _type() throws EndOfLexemesException {
+    private boolean _type() {
         if (getCurrentLexeme().equals(VariableType.INT.toString())) {
-            inc();
-            return true;
+            return inc();
         } else if (getCurrentLexeme().equals(VariableType.FLOAT.toString())) {
-            inc();
-            return true;
+            return inc();
         } else {
             error(EC.WRONG_TYPE);
             return false;
@@ -564,7 +548,7 @@ public class SyntaxAnalyzer {
     }
 
     private void error(String msg) {
-        String message = "Line " + la.getLexemes().get(i).getLine() + ": " + msg;
+        String message = "Line " + la.getLexemes().get((i < la.getLexemes().size()) ? i : la.getLexemes().size() - 1).getLine() + ": " + msg;
         errors.add(message);
         System.out.println(message);
     }
