@@ -1,11 +1,11 @@
 package kpi.skarlet.cad.synzer.transition_table;
 
-public class Elems {
-    Integer stackPush = null;
-    int nextState;
-    String comparability;
+public class TransitionElems {
+    private Integer stackPush = null;
+    private int nextState;
+    private String comparability;
 
-    public Elems(Integer stackPush, int nextState, String comparability) {
+    public TransitionElems(Integer stackPush, int nextState, String comparability) {
         this.stackPush = stackPush;
         this.nextState = nextState;
         this.comparability = comparability;

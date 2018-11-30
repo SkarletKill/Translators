@@ -3,9 +3,9 @@ package kpi.skarlet.cad.synzer.transition_table;
 import java.io.IOException;
 
 public class AttributeNotFoundException extends IOException {
-    String tag;
-    String attribute;
-    String message;
+    private String tag;
+    private String attribute;
+    private String message;
 
     public AttributeNotFoundException(String tag, String attribute) {
         this.tag = tag;

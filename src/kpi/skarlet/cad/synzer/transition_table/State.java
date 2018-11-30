@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class State {
     private int name;
-    private Map<Integer, Elems> transitions;
+    private Map<Integer, TransitionElems> transitions;
     private String incomparability;
 
     public State(int name) {
@@ -22,15 +22,15 @@ public class State {
         this.incomparability = incomparability;
     }
 
-    public void add(Integer labelKey, Elems elems) {
-        transitions.put(labelKey, elems);
+    public void add(Integer labelKey, TransitionElems transitionElems) {
+        transitions.put(labelKey, transitionElems);
     }
 
     public int getName() {
         return name;
     }
 
-    public Map<Integer, Elems> getTransitions() {
+    public Map<Integer, TransitionElems> getTransitions() {
         return transitions;
     }
 
