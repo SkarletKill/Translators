@@ -4,10 +4,10 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.*;
-import javax.xml.xpath.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TestXML {
     private final String dataPath = "res/transition_table.xml";
@@ -18,15 +18,17 @@ public class TestXML {
     private final String tagTransition = "transition";
     private final String tagStack = "stack";
     private final String tagGoto = "goto";
-    private final String tagComparability = "comparability";
-    private final String tagIncomparability = "incompatibility";
+    private final String tagComparison = "comparability";
+    private final String tagIncompatibility = "incompatibility";
 
     public static void main(String[] args) {
         TestXML testXML = new TestXML();
-        testXML.transitionTable();
+//        Integer.parseInt(null);
+        testXML.states = testXML.transitionTable();
+        System.out.println(testXML.states);
     }
 
-    private void transitionTable() {
+    private Map<Integer, State> transitionTable() {
         try {
             // Создается построитель документа
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -36,8 +38,16 @@ public class TestXML {
             // Получаем корневой элемент
             Node root = document.getDocumentElement();
 
-            show(root.getNodeName(), "", 0);
-            System.out.println();
+            states = new HashMap<>() {
+                @Override
+                public String toString() {
+                    return this.entrySet()
+                            .stream()
+                            .map(entry -> entry.getKey() + " = " + entry.getValue())
+                            .collect(Collectors.joining(",\n ", "{", "}"));
+                }
+            };
+
             NodeList stateList = root.getChildNodes();
             // -> states
             for (int i = 0; i < stateList.getLength(); i++) {
@@ -48,6 +58,8 @@ public class TestXML {
                 }
             }
 
+            return states;
+
         } catch (ParserConfigurationException ex) {
             ex.printStackTrace(System.out);
         } catch (SAXException ex) {
@@ -56,11 +68,13 @@ public class TestXML {
             ex.printStackTrace(System.out);
         }
 
+        return null;
     }
 
     private void handleState(Node state) throws AttributeNotFoundException {
         // проверка атрибута 'name'
-        checkForAttribute(state, "name", 0);
+        int stateNum = Integer.parseInt(checkForAttribute(state, "name", 0));
+        states.put(stateNum, new State(stateNum));
 
         NodeList stateProps = state.getChildNodes();
         // -> подтеги state
@@ -68,51 +82,61 @@ public class TestXML {
             Node stateProp = stateProps.item(j);
             // -> transitions
             if (stateProp.getNodeName().equals(tagTransitions)) {
-                show(stateProp.getNodeName(), "", 1);
                 NodeList transitions = stateProp.getChildNodes();
                 for (int k = 0; k < transitions.getLength(); k++) {
                     Node transition = transitions.item(k);
                     // -> transition
                     if (transition.getNodeName().equals(tagTransition)) {
-                        handleTransition(transition);
+                        handleTransition(transition, stateNum);
                     } // end transition
                 }
             } // end transitions
-            nodeCheckPrint(stateProp, tagIncomparability, 1);
+            if (nodeCheck(stateProp, tagIncompatibility))
+                states.get(stateNum).setIncomparability(getNodeContext(stateProp));
         }
-        System.out.println("===========>>>>");
+//        System.out.println("===========>>>>");
     }
 
-    private void handleTransition(Node transition) throws AttributeNotFoundException {
+    private void handleTransition(Node transition, int state) throws AttributeNotFoundException {
         // проверка атрибута 'label'
-        checkForAttribute(transition, "label", 2);
+        String label = checkForAttribute(transition, "label", 2);
+        Integer stack = null, nextState = null;
+        String comparability = null;
 
         NodeList transProps = transition.getChildNodes();
         for (int l = 0; l < transProps.getLength(); l++) {
             Node transProp = transProps.item(l);
-            // -> stack
-            nodeCheckPrint(transProp, tagStack, 3);
-            // -> goto
-            nodeCheckPrint(transProp, tagGoto, 3);
-            // -> comparability
-            nodeCheckPrint(transProp, tagComparability, 3);
+            // -> stack / goto / comparability
+            if (nodeCheck(transProp, tagStack)) {
+                String nodeContext = getNodeContext(transProp);
+                stack = (nodeContext != null) ? Integer.parseInt(nodeContext) : null;
+            } else if (nodeCheck(transProp, tagGoto)) {
+                String nodeContext = getNodeContext(transProp);
+                nextState = (nodeContext != null) ? Integer.parseInt(nodeContext) : null;
+            } else if (nodeCheck(transProp, tagComparison)) {
+                comparability = getNodeContext(transProp);
+            }
         } // end transition props
+
+        states.get(state).add(label, new TransitionElems(stack, nextState, comparability));
     }
 
-    private void checkForAttribute(Node tagNode, String attr, int indent) throws AttributeNotFoundException {
+    private String checkForAttribute(Node tagNode, String attr, int indent) throws AttributeNotFoundException {
         Node attribute = tagNode.getAttributes().getNamedItem(attr);
         if (attribute != null) {
-            show(tagNode.getNodeName(), null, indent, attribute.getNodeName(), attribute.getTextContent());
+            return attribute.getTextContent();
         } else {
             throw new AttributeNotFoundException(tagNode.getNodeName(), attr);
         }
     }
 
-    private void nodeCheckPrint(Node node, String field, int indent) {
-        if (node.getNodeName().equals(field)) {
-            Node text = node.getChildNodes().item(0);
-            show(node.getNodeName(), (text != null) ? text.getTextContent() : "null", indent);
-        }
+    private boolean nodeCheck(Node node, String field) {
+        return node.getNodeName().equals(field);
+    }
+
+    private String getNodeContext(Node node) {
+        Node text = node.getChildNodes().item(0);
+        return (text != null) ? text.getTextContent() : null;
     }
 
     private void show(String tag, String text, int layer) {

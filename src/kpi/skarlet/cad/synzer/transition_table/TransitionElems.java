@@ -22,4 +22,18 @@ public class TransitionElems {
     public String getComparability() {
         return comparability;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder().append("{")
+                .append("stack: ")
+                .append(stackPush)
+                .append(", ")
+                .append("nextState: ")
+                .append(nextState)
+                .append(", ")
+                .append("cmp: ")
+                .append(comparability)
+                .append("}").toString();
+    }
 }
