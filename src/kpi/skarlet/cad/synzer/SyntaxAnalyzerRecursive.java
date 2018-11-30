@@ -1,5 +1,6 @@
 package kpi.skarlet.cad.synzer;
 
+import kpi.skarlet.cad.constants.TerminalSymbols;
 import kpi.skarlet.cad.lexer.LexicalAnalyser;
 import kpi.skarlet.cad.lexer.VariableType;
 import kpi.skarlet.cad.lexer.exceptions.EndOfLexemesException;
@@ -7,7 +8,7 @@ import kpi.skarlet.cad.lexer.lexemes.Lexeme;
 
 import java.util.ArrayList;
 
-public class SyntaxAnalyzer {
+public class SyntaxAnalyzerRecursive {
     private ErrorConstants EC;
     private TerminalSymbols TS;
     private ArrayList<String> errors;
@@ -16,17 +17,21 @@ public class SyntaxAnalyzer {
 
     private Lexeme currentLex;      // debug only
 
-    public SyntaxAnalyzer(LexicalAnalyser lexer) {
+    public SyntaxAnalyzerRecursive(LexicalAnalyser lexer) {
         this.la = lexer;
         this.errors = new ArrayList<>();
         this.i = 0;
     }
 
     public static void main(String[] args) {
-        SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(new LexicalAnalyser());
+        SyntaxAnalyzerRecursive syntaxAnalyzer = new SyntaxAnalyzerRecursive(new LexicalAnalyser());
     }
 
     public boolean run() {
+        if (la.getLexemes().isEmpty()) {
+            errors.add("Empty program code!");
+            return false;
+        }
         return program();
     }
 
@@ -36,7 +41,10 @@ public class SyntaxAnalyzer {
                 if (!inc()) return false;
                 if (operatorList()) {
                     if (getCurrentLexeme().equals(TS.CLOSING_BRACE)) {
-//                        if (!inc()) return false;
+                        if (i < la.getLexemes().size() - 1) {
+                            error("Found extra code after closing brace of lost of operators!");
+                            return false;
+                        }
                         return true;
                     } else error(EC.MISSING_CLOSING_BRACE);
                 } else error(EC.WRONG_OPERATOR_LIST);
@@ -106,13 +114,18 @@ public class SyntaxAnalyzer {
                     return inc();
                 } else {
                     error(EC.MISSING_CLOSING_BRACE);
+                    return false;
                 }
             } else {
                 error(EC.WRONG_OPERATOR_LIST);
+                return false;
             }
-        } else {
-            error(EC.MISSING_OPENING_BRACE);
         }
+
+        if (operator()) {
+            return true;
+        }
+
         return false;
     }
 
@@ -212,11 +225,11 @@ public class SyntaxAnalyzer {
             if (!inc()) return false;
             if (getCurrentLexeme().equals(TS.INPUT_JOINT)) {
                 if (!inc()) return false;
-                if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
+                if (getCurrentLexemeCode() == 101) {
                     if (!inc()) return false;
                     while (getCurrentLexeme().equals(TS.INPUT_JOINT)) {
                         if (!inc()) return false;
-                        if (getCurrentLexemeCode() == 101 || getCurrentLexemeCode() == 102) {
+                        if (getCurrentLexemeCode() == 101) {
                             if (!inc()) return false;
                         } else {
                             error(EC.EXPECTED_INPUT_VARIABLE);
@@ -429,8 +442,7 @@ public class SyntaxAnalyzer {
         }
         if (getCurrentLexeme().equals(TS.NEGATION)) {
             if (!inc()) return false;
-            // TODO investigate logical expressions
-            if (LT()) {
+            if (LF()) {
                 return true;
             } else {
                 error(EC.WRONG_NEGATION_BEFORE_EXPRESSION);

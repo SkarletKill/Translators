@@ -1,6 +1,6 @@
 package kpi.skarlet.cad.lexer.lexemes;
 
-import kpi.skarlet.cad.lexer.CharacterConstants;
+import kpi.skarlet.cad.constants.CharacterConstants;
 import kpi.skarlet.cad.lexer.VariableType;
 
 import java.util.ArrayList;

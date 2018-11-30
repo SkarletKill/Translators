@@ -1,11 +1,11 @@
 int input, res, i;
-{
-	for(i = 1; i < 5; i+1) {
-		cout << i;
-	};
-	if (input > 0) { goto exit:; };
-	cout << input;
-	res = -2.-3.-1;
-	cout << res;
-	exit:;
-}
+ {
+ 	for(i = 1; i < 4; i+2) {
+ 		cout << i;
+ 	};
+ 	if (input > 0) { goto exit:; };
+ 	cout << input;
+ 	res = -2.-3.-7;
+ 	cout << res;
+ 	exit:;
+ }

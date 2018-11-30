@@ -1,4 +1,4 @@
-package kpi.skarlet.cad.synzer;
+package kpi.skarlet.cad.constants;
 
 public interface TerminalSymbols {
     String TYPE_INT = "int";
@@ -32,4 +32,8 @@ public interface TerminalSymbols {
     String OPENING_BRACE = "{";
     String CLOSING_BRACE = "}";
     String SEMICOLON = ";";
+
+//    String IDENTIFIER = "_IDN";
+//    String CONSTANT = "_CON";
+//    String LABEL = "_LBL";
 }

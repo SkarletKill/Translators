@@ -1,5 +1,7 @@
 package kpi.skarlet.cad.synzer;
 
+import kpi.skarlet.cad.constants.TerminalSymbols;
+
 public interface ErrorConstants {
 
     String WRONG_TYPE = "Invalid data type";

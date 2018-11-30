@@ -1,4 +1,4 @@
-package kpi.skarlet.cad.lexer;
+package kpi.skarlet.cad.constants;
 
 public interface CharacterConstants {
     char dot = '.';

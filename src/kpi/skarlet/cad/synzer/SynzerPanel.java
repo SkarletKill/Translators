@@ -179,9 +179,9 @@ public class SynzerPanel extends JPanel {
                         table.setModel(model);
                         table.getTableHeader().setUpdateTableInRealTime(false);
                     } else if (e.getSource() == analyseText) {
-                        SyntaxAnalyzer synzer = MainWindow.getSynzer();
+                        SyntaxAnalyzerRecursive synzer = MainWindow.getSynzer();
                         if (synzer == null) {
-                            synzer = new SyntaxAnalyzer(lexer);
+                            synzer = new SyntaxAnalyzerRecursive(lexer);
                         } else {
                             synzer.clear();
                         }
@@ -217,7 +217,10 @@ public class SynzerPanel extends JPanel {
                     table.setModel(model);
                     table.getTableHeader().setUpdateTableInRealTime(false);
                 }
-                table.getColumnModel().getColumn(0).setMaxWidth(30);
+                try {
+                    table.getColumnModel().getColumn(0).setMaxWidth(30);
+                } catch (IndexOutOfBoundsException ex) {
+                }
             }
 
             private void setColumnWidth() {
@@ -294,7 +297,7 @@ public class SynzerPanel extends JPanel {
                 return data;
             }
 
-            private Object[][] getSyntaxExceptionsData(SyntaxAnalyzer synzer) {
+            private Object[][] getSyntaxExceptionsData(SyntaxAnalyzerRecursive synzer) {
                 Stream<String> exceptionStream = synzer.getErrors().stream();
                 AtomicInteger i = new AtomicInteger(1);
                 List<Object[]> errors = exceptionStream.map(s -> new Object[]{i.getAndIncrement(),
@@ -315,12 +318,12 @@ public class SynzerPanel extends JPanel {
 ////                    lexer.run(MainWindow.getLexerPanel().getText());
 //
 //
-//                SyntaxAnalyzer synzer = MainWindow.getSynzer();
+//                SyntaxAnalyzerRecursive synzer = MainWindow.getSynzer();
 //                if (synzer == null) {
 //                    LexicalAnalyser lexer = MainWindow.getLexer();
 //                    if (lexer.getLexemes().isEmpty())
 //                        lexer.run(MainWindow.getLexerPanel().getText());
-//                    synzer = new SyntaxAnalyzer(lexer);
+//                    synzer = new SyntaxAnalyzerRecursive(lexer);
 //                } else {
 //                    synzer.clear();
 //                }
@@ -343,7 +346,7 @@ public class SynzerPanel extends JPanel {
 //                table.getColumnModel().getColumn(0).setMaxWidth(30);
 //            }
 //
-//            private Object[][] getExceptionsData(SyntaxAnalyzer synzer) {
+//            private Object[][] getExceptionsData(SyntaxAnalyzerRecursive synzer) {
 //                Stream<String> exceptionStream = synzer.getErrors().stream();
 //                AtomicInteger i = new AtomicInteger(1);
 //                List<Object[]> errors = exceptionStream.map(s -> new Object[]{i.getAndIncrement(),
