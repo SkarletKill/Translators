@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TestXML {
-    private final String dataPath = "res/transition_table.xml";
+public class TTReader {
+    private String dataPath = "res/transition_table.xml";
     private Map<Integer, State> states;
 
     private final String tagState = "state";
@@ -22,10 +22,13 @@ public class TestXML {
     private final String tagIncompatibility = "incomparability";
 
     public static void main(String[] args) {
-        TestXML testXML = new TestXML();
-//        Integer.parseInt(null);
-        testXML.states = testXML.transitionTable();
-        System.out.println(testXML.states);
+        TTReader TTReader = new TTReader("res/transition_table.xml");
+        System.out.println(TTReader.states);
+    }
+
+    public TTReader(String dataPath) {
+        this.dataPath = dataPath;
+        this.states = this.transitionTable();
     }
 
     private Map<Integer, State> transitionTable() {
@@ -182,6 +185,10 @@ public class TestXML {
         if (text != null)
             space.append(text);
         System.out.println(space);
+    }
+
+    public Map<Integer, State> getStates() {
+        return states;
     }
 
 }
