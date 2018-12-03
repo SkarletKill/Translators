@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 public class State {
     private int name;
     private Map<String, TransitionElems> transitions;
-    private String incomparability;
+    private TransitionElems incomparability;
+    private String incomparabilityMsg;
 
     public State(int name) {
         this.name = name;
@@ -22,13 +23,17 @@ public class State {
         };
     }
 
-    public State(int name, String incomparability) {
+    public State(int name, String incomparabilityMsg) {
         this.name = name;
-        this.incomparability = incomparability;
+        this.incomparabilityMsg = incomparabilityMsg;
     }
 
-    public void setIncomparability(String incomparability) {
-        this.incomparability = incomparability;
+    public void setIncomparabilityMsg(String incomparabilityMsg) {
+        this.incomparabilityMsg = incomparabilityMsg;
+    }
+
+    public void setIncomparability(TransitionElems transitionElems) {
+        this.incomparability = transitionElems;
     }
 
     public void add(String labelKey, TransitionElems transitionElems) {
@@ -43,7 +48,11 @@ public class State {
         return transitions.get(label);
     }
 
-    public String getIncomparability() {
+    public String getIncomparabilityMsg() {
+        return incomparabilityMsg;
+    }
+
+    public TransitionElems getIncomparability() {
         return incomparability;
     }
 
@@ -52,7 +61,8 @@ public class State {
         return "State {" +
                 "name: " + name +
                 ",\n\t\t\ttransitions: " + transitions +
-                ",\n\t\t\tincomparability: '" + incomparability + '\'' +
+                ",\n\t\t\tincomparabilityMsg: '" + incomparabilityMsg + '\'' +
+                ",\n\t\t\tincomparability: " + incomparability +
                 '}';
     }
 }

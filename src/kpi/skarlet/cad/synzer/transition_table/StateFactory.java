@@ -24,7 +24,7 @@ public class StateFactory {
         states.put(stateNum, new State(stateNum));
         states.get(stateNum).add(TS.TYPE_INT, new TransitionElems(2, 11, null));
         states.get(stateNum).add(TS.TYPE_FLOAT, new TransitionElems(2, 11, null));
-        states.get(stateNum).setIncomparability(EC.WRONG_AD);
+        states.get(stateNum).setIncomparabilityMsg(EC.WRONG_AD);
 
         stateNum = 2;
         states.put(stateNum, new State(stateNum));

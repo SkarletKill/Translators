@@ -19,7 +19,7 @@ public class TestXML {
     private final String tagStack = "stack";
     private final String tagGoto = "goto";
     private final String tagComparison = "comparability";
-    private final String tagIncompatibility = "incompatibility";
+    private final String tagIncompatibility = "incomparability";
 
     public static void main(String[] args) {
         TestXML testXML = new TestXML();
@@ -73,7 +73,7 @@ public class TestXML {
 
     private void handleState(Node state) throws AttributeNotFoundException {
         // проверка атрибута 'name'
-        int stateNum = Integer.parseInt(checkForAttribute(state, "name", 0));
+        int stateNum = Integer.parseInt(checkForAttrSafe(state, "name"));
         states.put(stateNum, new State(stateNum));
 
         NodeList stateProps = state.getChildNodes();
@@ -87,19 +87,27 @@ public class TestXML {
                     Node transition = transitions.item(k);
                     // -> transition
                     if (transition.getNodeName().equals(tagTransition)) {
-                        handleTransition(transition, stateNum);
+                        String label = checkForAttrSafe(transition, "label");
+                        states.get(stateNum).add(label, handleTransition(transition));
                     } // end transition
                 }
             } // end transitions
-            if (nodeCheck(stateProp, tagIncompatibility))
-                states.get(stateNum).setIncomparability(getNodeContext(stateProp));
+            if (nodeCheck(stateProp, tagIncompatibility)) {
+                String attr = checkForAttribute(stateProp, "error");
+                if (attr == null) {
+                    NodeList incmpProps = stateProp.getChildNodes();
+                    if (incmpProps.getLength() < 1) continue;
+                    states.get(stateNum).setIncomparability(handleTransition(stateProp));
+                } else {
+                    states.get(stateNum).setIncomparabilityMsg(attr);
+                }
+            } // end incomparability
         }
 //        System.out.println("===========>>>>");
     }
 
-    private void handleTransition(Node transition, int state) throws AttributeNotFoundException {
+    private TransitionElems handleTransition(Node transition) {
         // проверка атрибута 'label'
-        String label = checkForAttribute(transition, "label", 2);
         Integer stack = null, nextState = null;
         String comparability = null;
 
@@ -118,15 +126,24 @@ public class TestXML {
             }
         } // end transition props
 
-        states.get(state).add(label, new TransitionElems(stack, nextState, comparability));
+        return new TransitionElems(stack, nextState, comparability);
     }
 
-    private String checkForAttribute(Node tagNode, String attr, int indent) throws AttributeNotFoundException {
+    private String checkForAttrSafe(Node tagNode, String attr) throws AttributeNotFoundException {
         Node attribute = tagNode.getAttributes().getNamedItem(attr);
         if (attribute != null) {
             return attribute.getTextContent();
         } else {
             throw new AttributeNotFoundException(tagNode.getNodeName(), attr);
+        }
+    }
+
+    private String checkForAttribute(Node tagNode, String attr) {
+        Node attribute = tagNode.getAttributes().getNamedItem(attr);
+        if (attribute != null) {
+            return attribute.getTextContent();
+        } else {
+            return null;
         }
     }
 

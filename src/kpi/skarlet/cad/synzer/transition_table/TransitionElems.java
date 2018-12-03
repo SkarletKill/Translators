@@ -32,8 +32,8 @@ public class TransitionElems {
                 .append("nextState: ")
                 .append(nextState)
                 .append(", ")
-                .append("cmp: ")
+                .append("cmp: \'")
                 .append(comparability)
-                .append("}").toString();
+                .append("\'}").toString();
     }
 }

@@ -6,24 +6,101 @@
             <transition label="int">
                 <stack>2</stack>
                 <goto>11</goto>
-                <comparability/>
             </transition>
             <transition label="float">
                 <stack>2</stack>
                 <goto>11</goto>
-                <comparability/>
             </transition>
         </transitions>
-        <incomparability>Wrong ad</incomparability>
+        <incomparability error="Wrong ad"/>
+        <!--<incomparability>Wrong ad</incomparability>-->
     </state>
     <state name="2">
         <transitions>
             <transition label=";">
                 <stack/>
                 <goto>3</goto>
-                <comparability/>
             </transition>
         </transitions>
         <incomparability/>
     </state>
+    <state name="3">
+        <transitions>
+            <transition label="int">
+                <stack>4</stack>
+                <goto>11</goto>
+            </transition>
+            <transition label="float">
+                <stack>4</stack>
+                <goto>11</goto>
+            </transition>
+            <transition label="{">
+                <stack>5</stack>
+                <goto>21</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="4">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>3</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="5">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>6</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="6">
+        <transitions>
+            <transition label="}">
+                <stack/>
+                <goto>8</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack>7</stack>
+            <goto>21</goto>
+        </incomparability>
+    </state>
+    <state name="7">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>6</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="8">
+        <transitions/>
+        <incomparability error="exit"/>
+    </state>
+    <!--<state>-->
+        <!--<transitions>-->
+            <!--<transition label="">-->
+                <!--<stack></stack>-->
+                <!--<goto></goto>-->
+            <!--</transition>-->
+        <!--</transitions>-->
+        <!--<incomparability/>-->
+    <!--</state>-->
+    <!--<state>-->
+        <!--<transitions>-->
+            <!--<transition label="">-->
+                <!--<stack></stack>-->
+                <!--<goto></goto>-->
+                <!--<comparability/>-->
+            <!--</transition>-->
+        <!--</transitions>-->
+        <!--<incomparability/>-->
+    <!--</state>-->
 </states>
