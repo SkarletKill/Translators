@@ -13,7 +13,7 @@ import java.util.Stack;
 public class SyntaxAnalyzerAutomate {
     private LexicalAnalyser la;
     private Map<Integer, State> stateTransitions;
-//    private ArrayList<int, String, int[]>
+    private ArrayList<DataTableField> dataTable;
 
     private Stack<Integer> stack;
     private int i;
@@ -25,9 +25,20 @@ public class SyntaxAnalyzerAutomate {
 
         boolean res = saa.run();
         System.out.println("SA: " + res);
+        System.out.println(saa.dataTable);
     }
 
     public SyntaxAnalyzerAutomate() {
+        dataTable = new ArrayList<>() {
+            @Override
+            public String toString() {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < this.size(); i++) {
+                    builder.append(i + 1).append(": ").append(this.get(i)).append('\n');
+                }
+                return builder.toString();
+            }
+        };
         stack = new Stack<>();
         TTReader ttr = new TTReader("res/transition_table.xml");
         this.la = new LexicalAnalyser();
@@ -54,6 +65,7 @@ public class SyntaxAnalyzerAutomate {
                     error = stateTransitions.get(state).getIncomparabilityMsg();
                     if (error != null && error.equals("exit")) {
                         if (stack.empty()) return true;
+                        addTableRecord();
                         state = stack.pop();
                         continue;
                     }
@@ -72,7 +84,12 @@ public class SyntaxAnalyzerAutomate {
         return stateTransitions.get(state).getIncomparability() != null;
     }
 
+    private void addTableRecord() {
+        dataTable.add(new DataTableField(state, getCurrentLexeme(), stackCopy()));
+    }
+
     private void nextState(TransitionElems elems) {
+        addTableRecord();
         state = elems.getNextState();
         if (elems.getStackPush() != null)
             stack.push(elems.getStackPush());
@@ -100,9 +117,30 @@ public class SyntaxAnalyzerAutomate {
         }
     }
 
-    private class DataTable {
+    private ArrayList<Integer> stackCopy() {
+        ArrayList<Integer> list = new ArrayList<>();
+        list.addAll(stack);
+        return list;
+    }
+
+    private class DataTableField {
         int state;
         String label;
-        Stack<Integer> stack;
+        ArrayList<Integer> stack;
+
+        public DataTableField(int state, String label, ArrayList<Integer> stack) {
+            this.state = state;
+            this.label = label;
+            this.stack = stack;
+        }
+
+        @Override
+        public String toString() {
+            return new StringBuilder()
+                    .append("DTF{state: ").append(state).append(", ")
+                    .append("label: ").append(label).append(", ")
+                    .append("stack: ").append(stack).append("}")
+                    .toString();
+        }
     }
 }
