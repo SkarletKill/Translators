@@ -6,12 +6,14 @@ import kpi.skarlet.cad.synzer.transition_table.State;
 import kpi.skarlet.cad.synzer.transition_table.TTReader;
 import kpi.skarlet.cad.synzer.transition_table.TransitionElems;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
 
 public class SyntaxAnalyzerAutomate {
     private LexicalAnalyser la;
     private Map<Integer, State> stateTransitions;
+//    private ArrayList<int, String, int[]>
 
     private Stack<Integer> stack;
     private int i;
@@ -96,5 +98,11 @@ public class SyntaxAnalyzerAutomate {
         } else {
             return false;
         }
+    }
+
+    private class DataTable {
+        int state;
+        String label;
+        Stack<Integer> stack;
     }
 }

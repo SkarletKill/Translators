@@ -238,11 +238,14 @@
                 <goto>29</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability>
+            <stack/>
+            <goto>51</goto>
+        </incomparability>
     </state>
     <state name="31">
         <transitions>
-            <transition label="{">
+            <transition label="(">
                 <stack/>
                 <goto>32</goto>
             </transition>
@@ -409,8 +412,17 @@
     <state name="49">
         <transitions>
             <transition label="{">
-                <stack>50</stack>
+                <stack>491</stack>
                 <goto>21</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="491">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>50</goto>
             </transition>
         </transitions>
         <incomparability/>
