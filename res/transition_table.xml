@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <states>
+    <!-- програма -->
     <state name="1">
         <transitions>
             <transition label="int">
@@ -13,7 +14,6 @@
             </transition>
         </transitions>
         <incomparability error="Wrong ad"/>
-        <!--<incomparability>Wrong ad</incomparability>-->
     </state>
     <state name="2">
         <transitions>
@@ -84,23 +84,524 @@
         <transitions/>
         <incomparability error="exit"/>
     </state>
+
+    <!-- список змінних -->
     <state name="11">
         <transitions>
-            <transition label="id">
+            <transition label="_IDN">
                 <stack/>
-                <goto></goto>
+                <goto>12</goto>
             </transition>
         </transitions>
         <incomparability/>
     </state>
-    <!--<state>-->
-        <!--<transitions>-->
-            <!--<transition label="">-->
-                <!--<stack></stack>-->
-                <!--<goto></goto>-->
-                <!--<comparability/>-->
-            <!--</transition>-->
-        <!--</transitions>-->
-        <!--<incomparability/>-->
-    <!--</state>-->
+    <state name="12">
+        <transitions>
+            <transition label=",">
+                <stack>12</stack>
+                <goto>11</goto>
+            </transition>
+        </transitions>
+        <incomparability error="exit"/>
+    </state>
+
+    <!-- оператор -->
+    <state name="21">
+        <transitions>
+            <transition label="_IDN">
+                <stack/>
+                <goto>22</goto>
+            </transition>
+            <transition label="cin">
+                <stack/>
+                <goto>25</goto>
+            </transition>
+            <transition label="cout">
+                <stack/>
+                <goto>28</goto>
+            </transition>
+            <transition label="_LBL">
+                <stack/>
+                <goto>51</goto>
+            </transition>
+            <transition label="for">
+                <stack/>
+                <goto>31</goto>
+            </transition>
+            <transition label="goto">
+                <stack/>
+                <goto>45</goto>
+            </transition>
+            <transition label="if">
+                <stack/>
+                <goto>47</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="22">
+        <transitions>
+            <transition label="=">
+                <stack/>
+                <goto>23</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="23">
+        <transitions/>
+        <incomparability>
+            <stack>24</stack>
+            <goto>61</goto>
+        </incomparability>
+    </state>
+    <state name="24">
+        <transitions>
+            <transition label="+">
+                <stack/>
+                <goto>23</goto>
+            </transition>
+            <transition label="-">
+                <stack/>
+                <goto>23</goto>
+            </transition>
+            <transition label="*">
+                <stack/>
+                <goto>23</goto>
+            </transition>
+            <transition label="/">
+                <stack/>
+                <goto>23</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack/>
+            <goto>51</goto>
+        </incomparability>
+    </state>
+    <state name="25">
+        <transitions>
+            <transition label="&gt;&gt;">
+                <stack/>
+                <goto>26</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="26">
+        <transitions>
+            <transition label="_IDN">
+                <stack/>
+                <goto>27</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="27">
+        <transitions>
+            <transition label="&gt;&gt;">
+                <stack/>
+                <goto>26</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack/>
+            <goto>51</goto>
+        </incomparability>
+    </state>
+    <state name="28">
+        <transitions>
+            <transition label="&lt;&lt;">
+                <stack/>
+                <goto>29</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="29">
+        <transitions>
+            <transition label="_IDN">
+                <stack/>
+                <goto>30</goto>
+            </transition>
+            <transition label="_CON">
+                <stack/>
+                <goto>30</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="30">
+        <transitions>
+            <transition label="&lt;&lt;">
+                <stack/>
+                <goto>29</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="31">
+        <transitions>
+            <transition label="{">
+                <stack/>
+                <goto>32</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="32">
+        <transitions>
+            <transition label="_IDN">
+                <stack/>
+                <goto>33</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="33">
+        <transitions>
+            <transition label="=">
+                <stack/>
+                <goto>34</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="34">
+        <transitions/>
+        <incomparability>
+            <stack>35</stack>
+            <goto>61</goto>
+        </incomparability>
+    </state>
+    <state name="35">
+        <transitions>
+            <transition label="+">
+                <stack/>
+                <goto>34</goto>
+            </transition>
+            <transition label="-">
+                <stack/>
+                <goto>34</goto>
+            </transition>
+            <transition label="*">
+                <stack/>
+                <goto>34</goto>
+            </transition>
+            <transition label="/">
+                <stack/>
+                <goto>34</goto>
+            </transition>
+            <transition label=";">
+                <stack>37</stack>
+                <goto>71</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="37">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>38</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="38">
+        <transitions/>
+        <incomparability>
+            <stack>39</stack>
+            <goto>61</goto>
+        </incomparability>
+    </state>
+    <state name="39">
+        <transitions>
+            <transition label="+">
+                <stack/>
+                <goto>38</goto>
+            </transition>
+            <transition label="-">
+                <stack/>
+                <goto>38</goto>
+            </transition>
+            <transition label="*">
+                <stack/>
+                <goto>38</goto>
+            </transition>
+            <transition label="/">
+                <stack/>
+                <goto>38</goto>
+            </transition>
+            <transition label=")">
+                <stack/>
+                <goto>40</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="40">
+        <transitions>
+            <transition label="{">
+                <stack>42</stack>
+                <goto>21</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="42">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>43</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="43">
+        <transitions>
+            <transition label="}">
+                <stack/>
+                <goto>51</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack>44</stack>
+            <goto>21</goto>
+        </incomparability>
+    </state>
+    <state name="44">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>43</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="45">
+        <transitions>
+            <transition label="_LBL">
+                <stack/>
+                <goto>51</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="47">
+        <transitions>
+            <transition label="(">
+                <stack>48</stack>
+                <goto>71</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="48">
+        <transitions>
+            <transition label=")">
+                <stack/>
+                <goto>49</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="49">
+        <transitions>
+            <transition label="{">
+                <stack>50</stack>
+                <goto>21</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="50">
+        <transitions>
+            <transition label="}">
+                <stack/>
+                <goto>51</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack>501</stack>
+            <goto>21</goto>
+        </incomparability>
+    </state>
+    <state name="501">
+        <transitions>
+            <transition label=";">
+                <stack/>
+                <goto>50</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="51">
+        <transitions/>
+        <incomparability error="exit"/>
+    </state>
+
+    <!-- V -->
+    <state name="61">
+        <transitions>
+            <transition label="(">
+                <stack/>
+                <goto>62</goto>
+            </transition>
+            <transition label="_IDN">
+                <stack/>
+                <goto>64</goto>
+            </transition>
+            <transition label="_CON">
+                <stack/>
+                <goto>64</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="62">
+        <transitions/>
+        <incomparability>
+            <stack>63</stack>
+            <goto>61</goto>
+        </incomparability>
+    </state>
+    <state name="63">
+        <transitions>
+            <transition label="+">
+                <stack/>
+                <goto>62</goto>
+            </transition>
+            <transition label="-">
+                <stack/>
+                <goto>62</goto>
+            </transition>
+            <transition label="*">
+                <stack/>
+                <goto>62</goto>
+            </transition>
+            <transition label="/">
+                <stack/>
+                <goto>62</goto>
+            </transition>
+            <transition label=")">
+                <stack/>
+                <goto>64</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="64">
+        <transitions/>
+        <incomparability error="exit"/>
+    </state>
+
+    <!-- LE -->
+    <state name="71">
+        <transitions>
+            <transition label="not">
+                <stack>77</stack>
+                <goto>71</goto>
+            </transition>
+            <transition label="(">
+                <stack>76</stack>
+                <goto>71</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack>73</stack>
+            <goto>61</goto>
+        </incomparability>
+    </state>
+    <state name="73">
+        <transitions>
+            <transition label="+">
+                <stack/>
+                <goto>71</goto>
+            </transition>
+            <transition label="-">
+                <stack/>
+                <goto>71</goto>
+            </transition>
+            <transition label="*">
+                <stack/>
+                <goto>71</goto>
+            </transition>
+            <transition label="/">
+                <stack/>
+                <goto>71</goto>
+            </transition>
+            <transition label="&lt;">
+                <stack>75</stack>
+                <goto>61</goto>
+            </transition>
+            <transition label="&lt;=">
+                <stack>75</stack>
+                <goto>61</goto>
+            </transition>
+            <transition label="&gt;">
+                <stack>75</stack>
+                <goto>61</goto>
+            </transition>
+            <transition label="&gt;=">
+                <stack>75</stack>
+                <goto>61</goto>
+            </transition>
+            <transition label="!=">
+                <stack>75</stack>
+                <goto>61</goto>
+            </transition>
+            <transition label="==">
+                <stack>75</stack>
+                <goto>61</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="75">
+        <transitions>
+            <transition label="+">
+                <stack/>
+                <goto>73</goto>
+            </transition>
+            <transition label="-">
+                <stack/>
+                <goto>73</goto>
+            </transition>
+            <transition label="*">
+                <stack/>
+                <goto>73</goto>
+            </transition>
+            <transition label="/">
+                <stack/>
+                <goto>73</goto>
+            </transition>
+        </transitions>
+        <incomparability>
+            <stack/>
+            <goto>77</goto>
+        </incomparability>
+    </state>
+    <state name="76">
+        <transitions>
+            <transition label=")">
+                <stack/>
+                <goto>77</goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
+    <state name="77">
+        <transitions>
+            <transition label="and">
+                <stack>77</stack>
+                <goto>71</goto>
+            </transition>
+            <transition label="or">
+                <stack>77</stack>
+                <goto>71</goto>
+            </transition>
+        </transitions>
+        <incomparability error="exit"/>
+    </state>
 </states>
