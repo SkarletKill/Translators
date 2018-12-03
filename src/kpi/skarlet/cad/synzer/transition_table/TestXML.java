@@ -71,7 +71,7 @@ public class TestXML {
         return null;
     }
 
-    private void handleState(Node state) throws AttributeNotFoundException {
+    private void handleState(Node state) throws IOException {
         // проверка атрибута 'name'
         int stateNum = Integer.parseInt(checkForAttrSafe(state, "name"));
         states.put(stateNum, new State(stateNum));
@@ -88,7 +88,11 @@ public class TestXML {
                     // -> transition
                     if (transition.getNodeName().equals(tagTransition)) {
                         String label = checkForAttrSafe(transition, "label");
-                        states.get(stateNum).add(label, handleTransition(transition));
+                        try {
+                            states.get(stateNum).add(label, handleTransition(transition));
+                        } catch (NullPointerException npe) {
+                            throw new MissingTransitionStateException(stateNum, label);
+                        }
                     } // end transition
                 }
             } // end transitions
@@ -99,6 +103,9 @@ public class TestXML {
                     if (incmpProps.getLength() < 1) continue;
                     states.get(stateNum).setIncomparability(handleTransition(stateProp));
                 } else {
+                    if (attr.equals("exit")) {
+                        states.get(stateNum).setFinite();
+                    }
                     states.get(stateNum).setIncomparabilityMsg(attr);
                 }
             } // end incomparability
@@ -106,7 +113,7 @@ public class TestXML {
 //        System.out.println("===========>>>>");
     }
 
-    private TransitionElems handleTransition(Node transition) {
+    private TransitionElems handleTransition(Node transition) throws NullPointerException {
         // проверка атрибута 'label'
         Integer stack = null, nextState = null;
         String comparability = null;

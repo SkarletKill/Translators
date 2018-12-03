@@ -84,15 +84,15 @@
         <transitions/>
         <incomparability error="exit"/>
     </state>
-    <!--<state>-->
-        <!--<transitions>-->
-            <!--<transition label="">-->
-                <!--<stack></stack>-->
-                <!--<goto></goto>-->
-            <!--</transition>-->
-        <!--</transitions>-->
-        <!--<incomparability/>-->
-    <!--</state>-->
+    <state name="11">
+        <transitions>
+            <transition label="id">
+                <stack/>
+                <goto></goto>
+            </transition>
+        </transitions>
+        <incomparability/>
+    </state>
     <!--<state>-->
         <!--<transitions>-->
             <!--<transition label="">-->

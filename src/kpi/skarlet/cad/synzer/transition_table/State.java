@@ -9,6 +9,7 @@ public class State {
     private Map<String, TransitionElems> transitions;
     private TransitionElems incomparability;
     private String incomparabilityMsg;
+    private boolean isFinite = false;
 
     public State(int name) {
         this.name = name;
@@ -36,6 +37,10 @@ public class State {
         this.incomparability = transitionElems;
     }
 
+    public void setFinite(){
+        this.isFinite = true;
+    }
+
     public void add(String labelKey, TransitionElems transitionElems) {
         transitions.put(labelKey, transitionElems);
     }
@@ -56,13 +61,27 @@ public class State {
         return incomparability;
     }
 
+    public boolean isFinite() {
+        return isFinite;
+    }
+
     @Override
     public String toString() {
-        return "State {" +
-                "name: " + name +
-                ",\n\t\t\ttransitions: " + transitions +
-                ",\n\t\t\tincomparabilityMsg: '" + incomparabilityMsg + '\'' +
-                ",\n\t\t\tincomparability: " + incomparability +
-                '}';
+        String space = "\t\t\t";
+//        return "State {" +
+//                "name: " + name +
+//                ",\n" + space + "transitions: " + transitions +
+//                ",\n" + space + "incomparabilityMsg: '" + incomparabilityMsg + '\'' +
+//                ",\n" + space + "incomparability: " + incomparability +
+//                '}';
+        return new StringBuilder().append("State {")
+                .append("name: ")
+                .append(name)
+                .append(",\n").append(space).append("transitions: ").append(transitions)
+                .append(",\n").append(space).append("incomparabilityMsg: '").append(incomparabilityMsg).append('\'')
+                .append(",\n").append(space).append("incomparability: ").append(incomparability)
+                .append(",\n").append(space).append("isFinite: ").append(isFinite)
+                .append('}')
+                .toString();
     }
 }
