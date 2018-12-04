@@ -90,7 +90,7 @@ public class SyntaxAnalyzerAutomate {
     }
 
     private void addTableRecord() {
-        dataTable.add(new DataTableField(state, getCurrentLexeme(), stackCopy()));
+        dataTable.add(new DataTableField(state, curLex, stackCopy()));
     }
 
     private void nextState(TransitionElems elems) {
@@ -105,11 +105,14 @@ public class SyntaxAnalyzerAutomate {
         Lexeme lexeme = la.getLexemes().get(i);
         if (lexeme.getCode() > 99) {
             if (lexeme.getCode() == 100) {
-                return curLex = "_LBL";
+                curLex = lexeme.getName();
+                return "_LBL";
             } else if (lexeme.getCode() == 101) {
-                return curLex = "_IDN";
+                curLex = lexeme.getName();
+                return "_IDN";
             } else if (lexeme.getCode() == 102) {
-                return curLex = "_CON";
+                curLex = lexeme.getName();
+                return "_CON";
             }
         }
         return curLex = lexeme.getName();
