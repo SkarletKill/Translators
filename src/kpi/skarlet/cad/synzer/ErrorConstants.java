@@ -50,7 +50,7 @@ public interface ErrorConstants {
     String MISSING_IDLIST_FIRST_ID = "Missing first identifier";
 
     String EXPECTED_TYPE = "Type expected";
-    String EXPECTED_SEMICOLON = "; expected";
+    String EXPECTED_SEMICOLON = "semicolon expected";
     String EXPECTED_EXPRESSION = "Expression expected";
     String EXPECTED_LABEL = "Label expected";
     String EXPECTED_INPUT_VARIABLE = "Identifier or constant expected";

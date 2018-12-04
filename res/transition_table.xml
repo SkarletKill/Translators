@@ -13,7 +13,7 @@
                 <goto>11</goto>
             </transition>
         </transitions>
-        <incomparability error="Wrong ad"/>
+        <incomparability error="Type expected"/>
     </state>
     <state name="2">
         <transitions>
@@ -22,7 +22,7 @@
                 <goto>3</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="3">
         <transitions>
@@ -39,7 +39,7 @@
                 <goto>21</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Missing opening brace or type"/>
     </state>
     <state name="4">
         <transitions>
@@ -48,7 +48,7 @@
                 <goto>3</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="5">
         <transitions>
@@ -57,7 +57,7 @@
                 <goto>6</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="6">
         <transitions>
@@ -78,7 +78,7 @@
                 <goto>6</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="8">
         <transitions/>
@@ -93,7 +93,7 @@
                 <goto>12</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Identifier expected"/>
     </state>
     <state name="12">
         <transitions>
@@ -137,7 +137,7 @@
                 <goto>47</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Operator expected"/>
     </state>
     <state name="22">
         <transitions>
@@ -146,7 +146,7 @@
                 <goto>23</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Assignment expected"/>
     </state>
     <state name="23">
         <transitions/>
@@ -186,7 +186,7 @@
                 <goto>26</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="&quot;&gt;&gt;&quot; expected"/>
     </state>
     <state name="26">
         <transitions>
@@ -195,7 +195,7 @@
                 <goto>27</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Identifier expected"/>
     </state>
     <state name="27">
         <transitions>
@@ -216,7 +216,7 @@
                 <goto>29</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="&quot;&lt;&lt;&quot; expected"/>
     </state>
     <state name="29">
         <transitions>
@@ -229,7 +229,7 @@
                 <goto>30</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Constant or identifier expected"/>
     </state>
     <state name="30">
         <transitions>
@@ -250,7 +250,7 @@
                 <goto>32</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Opening bracket expected"/>
     </state>
     <state name="32">
         <transitions>
@@ -259,7 +259,7 @@
                 <goto>33</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Identifier expected"/>
     </state>
     <state name="33">
         <transitions>
@@ -268,7 +268,7 @@
                 <goto>34</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Assignment expected"/>
     </state>
     <state name="34">
         <transitions/>
@@ -300,7 +300,7 @@
                 <goto>71</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="37">
         <transitions>
@@ -309,7 +309,7 @@
                 <goto>38</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="38">
         <transitions/>
@@ -341,7 +341,7 @@
                 <goto>40</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Closing bracket expected"/>
     </state>
     <state name="40">
         <transitions>
@@ -350,7 +350,7 @@
                 <goto>21</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Opening brace expected"/>
     </state>
     <state name="42">
         <transitions>
@@ -359,7 +359,7 @@
                 <goto>43</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="43">
         <transitions>
@@ -380,7 +380,7 @@
                 <goto>43</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="45">
         <transitions>
@@ -389,7 +389,7 @@
                 <goto>51</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Label expected"/>
     </state>
     <state name="47">
         <transitions>
@@ -398,7 +398,7 @@
                 <goto>71</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Opening bracket expected"/>
     </state>
     <state name="48">
         <transitions>
@@ -407,7 +407,7 @@
                 <goto>49</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Closing bracket expected"/>
     </state>
     <state name="49">
         <transitions>
@@ -416,7 +416,7 @@
                 <goto>21</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Opening brace expected"/>
     </state>
     <state name="491">
         <transitions>
@@ -425,7 +425,7 @@
                 <goto>50</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="50">
         <transitions>
@@ -446,7 +446,7 @@
                 <goto>50</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Semicolon expected"/>
     </state>
     <state name="51">
         <transitions/>
@@ -469,7 +469,7 @@
                 <goto>64</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Wrong variable"/>
     </state>
     <state name="62">
         <transitions/>
@@ -501,7 +501,7 @@
                 <goto>64</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Closing bracket expected"/>
     </state>
     <state name="64">
         <transitions/>
@@ -568,7 +568,7 @@
                 <goto>61</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Variable or logic sign expected expected"/>
     </state>
     <state name="75">
         <transitions>
@@ -601,7 +601,7 @@
                 <goto>77</goto>
             </transition>
         </transitions>
-        <incomparability/>
+        <incomparability error="Closing bracket expected"/>
     </state>
     <state name="77">
         <transitions>

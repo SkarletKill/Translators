@@ -25,6 +25,7 @@ public class SyntaxAnalyzerAutomate {
 
         boolean res = saa.run();
         System.out.println("SA: " + res);
+//        if (res)
         System.out.println(saa.dataTable);
     }
 
@@ -50,7 +51,7 @@ public class SyntaxAnalyzerAutomate {
     }
 
     public boolean run() {
-        while (i < la.getLexemes().size()) {
+        while (true) {    // || не последняя лксема
             String error;
             TransitionElems elems;
             if (hasTransition(getCurrentLexeme())) {
@@ -63,17 +64,21 @@ public class SyntaxAnalyzerAutomate {
                     nextState(elems);
                 } else {
                     error = stateTransitions.get(state).getIncomparabilityMsg();
-                    if (error != null && error.equals("exit")) {
-                        if (stack.empty()) return true;
-                        addTableRecord();
-                        state = stack.pop();
-                        continue;
+                    if (error != null) {
+                        if (error.equals("exit")) {
+                            if (stack.empty()) return true;
+                            addTableRecord();
+                            state = stack.pop();
+                            continue;
+                        } else {
+                            System.err.println("line: " + getLexemeLine(i) + " - " + error);
+                        }
+                        return false;
                     }
-                    return false;
                 }
             }
         }
-        return true;
+//        return false;
     }
 
     private boolean hasTransition(String lex) {
@@ -96,17 +101,23 @@ public class SyntaxAnalyzerAutomate {
     }
 
     private String getCurrentLexeme() {
+        if (i >= la.getLexemes().size()) return curLex = "";
         Lexeme lexeme = la.getLexemes().get(i);
         if (lexeme.getCode() > 99) {
             if (lexeme.getCode() == 100) {
-                return "_LBL";
+                return curLex = "_LBL";
             } else if (lexeme.getCode() == 101) {
-                return "_IDN";
+                return curLex = "_IDN";
             } else if (lexeme.getCode() == 102) {
-                return "_CON";
+                return curLex = "_CON";
             }
         }
-        return lexeme.getName();
+        return curLex = lexeme.getName();
+    }
+
+    private int getLexemeLine(int i) {
+        int index = (i < la.getLexemes().size()) ? i : la.getLexemes().size() - 1;
+        return la.getLexemes().get(index).getLine();
     }
 
     private boolean inc() {
