@@ -8,7 +8,7 @@ import kpi.skarlet.cad.lexer.lexemes.Lexeme;
 
 import java.util.ArrayList;
 
-public class SyntaxAnalyzerRecursive {
+public class SyntaxAnalyzerRecursive extends SyntaxAnalyzer{
     private ErrorConstants EC;
     private TerminalSymbols TS;
     private ArrayList<String> errors;
@@ -27,6 +27,7 @@ public class SyntaxAnalyzerRecursive {
         SyntaxAnalyzerRecursive syntaxAnalyzer = new SyntaxAnalyzerRecursive(new LexicalAnalyser());
     }
 
+    @Override
     public boolean run() {
         if (la.getLexemes().isEmpty()) {
             errors.add("Empty program code!");
@@ -87,9 +88,9 @@ public class SyntaxAnalyzerRecursive {
     private boolean idList() {
         if (getCurrentLexemeCode() == 101) {
             if (!inc()) return false;
-            if (getCurrentLexeme().equals(TS.SEMICOLON)) {
-                return true;
-            }
+//            if (getCurrentLexeme().equals(TS.SEMICOLON)) {
+//                return true;
+//            }
             if (getCurrentLexeme().equals(TS.COMMA)) {
                 if (!inc()) return false;
                 if (idList()) {
@@ -98,7 +99,8 @@ public class SyntaxAnalyzerRecursive {
                     error(EC.WRONG_ID_LIST);
                 }
             } else {
-                error(EC.MISSING_IDLIST_COMMA);
+//                error(EC.MISSING_IDLIST_COMMA);
+                return true;
             }
         } else {
             error(EC.MISSING_IDLIST_FIRST_ID);
@@ -565,10 +567,12 @@ public class SyntaxAnalyzerRecursive {
         System.out.println(message);
     }
 
+    @Override
     public ArrayList<String> getErrors() {
         return errors;
     }
 
+    @Override
     public void clear() {
         this.errors.clear();
         this.i = 0;

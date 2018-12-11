@@ -6,6 +6,7 @@ import kpi.skarlet.cad.lexer.lexemes.Constant;
 import kpi.skarlet.cad.lexer.lexemes.Identifier;
 import kpi.skarlet.cad.lexer.lexemes.Label;
 import kpi.skarlet.cad.lexer.lexemes.Lexeme;
+import kpi.skarlet.cad.synzer.transition_table.DataTableField;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -30,6 +31,7 @@ public class SynzerPanel extends JPanel {
 
     private JTextArea messageField;
     private JButton analyseText;
+    private JButton outputTable;
 
     private int hPadding = 10;
     private int vPadding = 10;
@@ -62,6 +64,9 @@ public class SynzerPanel extends JPanel {
         analyseText = new JButton("Analyse");
         analyseText.addActionListener(lexerProductsListener);
 
+        outputTable = new JButton("Get Table");
+        outputTable.addActionListener(createSynzerDataListener());
+
         JPanel buttonsPanel = new JPanel();
         GridLayout gridLayoutButtons = new GridLayout(1, 4);
         gridLayoutButtons.setHgap(10);
@@ -88,9 +93,14 @@ public class SynzerPanel extends JPanel {
         c.weightx = 0.25;
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 3;
+        c.gridwidth = 2;
         message_runPanel.add(new JScrollPane(messageField), c);
 //        message_runPanel.add(table, c);
+        c.weighty = 0.1;
+        c.weightx = 0.0;
+        c.gridwidth = 1;
+        c.gridx = 2;
+        message_runPanel.add(outputTable, c);
         c.weighty = 0.1;
         c.weightx = 0.0;
         c.gridwidth = 1;
@@ -116,6 +126,7 @@ public class SynzerPanel extends JPanel {
                 if (lexer.getLexemes().isEmpty())
                     lexer.run(MainWindow.getLexerPanel().getText());
                 if (lexer.getExceptions().isEmpty()) {
+                    SyntaxAnalyzer synzer;
                     if (e.getSource() == lexemesButton) {
                         String[] columnNames = {"#",
                                 "# рядка",
@@ -179,7 +190,7 @@ public class SynzerPanel extends JPanel {
                         table.setModel(model);
                         table.getTableHeader().setUpdateTableInRealTime(false);
                     } else if (e.getSource() == analyseText) {
-                        SyntaxAnalyzerRecursive synzer = MainWindow.getSynzer();
+                        synzer = MainWindow.getSynzer();
                         if (synzer == null) {
                             synzer = new SyntaxAnalyzerRecursive(lexer);
                         } else {
@@ -205,17 +216,7 @@ public class SynzerPanel extends JPanel {
 
                 } else {
                     // show lexical exceptions
-                    String[] columnNames = {"#", "Exception"};
-                    Object[][] data = getExceptionsData(lexer);
-
-                    TableModel model = new DefaultTableModel(data, columnNames) {
-                        @Override
-                        public boolean isCellEditable(int row, int column) {
-                            return false;
-                        }
-                    };
-                    table.setModel(model);
-                    table.getTableHeader().setUpdateTableInRealTime(false);
+                    showLexerExceptions(lexer);
                 }
                 try {
                     table.getColumnModel().getColumn(0).setMaxWidth(30);
@@ -286,18 +287,7 @@ public class SynzerPanel extends JPanel {
                 return data;
             }
 
-            private Object[][] getExceptionsData(LexicalAnalyser lexer) {
-                Stream<LexicalException> exceptionStream = lexer.getExceptions().stream();
-                AtomicInteger i = new AtomicInteger(1);
-                List<Object[]> exceptions = exceptionStream.map(e -> new Object[]{i.getAndIncrement(),
-                        e.getMessage()}).collect(Collectors.toList());
-
-                Object[][] data = new Object[exceptions.size()][];
-                exceptions.toArray(data);
-                return data;
-            }
-
-            private Object[][] getSyntaxExceptionsData(SyntaxAnalyzerRecursive synzer) {
+            private Object[][] getSyntaxExceptionsData(SyntaxAnalyzer synzer) {
                 Stream<String> exceptionStream = synzer.getErrors().stream();
                 AtomicInteger i = new AtomicInteger(1);
                 List<Object[]> errors = exceptionStream.map(s -> new Object[]{i.getAndIncrement(),
@@ -307,7 +297,95 @@ public class SynzerPanel extends JPanel {
                 errors.toArray(data);
                 return data;
             }
+
         };
+    }
+
+    private ActionListener createSynzerDataListener() {
+        return new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LexicalAnalyser lexer = MainWindow.getLexer();
+                if (lexer.getLexemes().isEmpty())
+                    lexer.run(MainWindow.getLexerPanel().getText());
+                if (lexer.getExceptions().isEmpty()) {
+                    SyntaxAnalyzer synzer;
+                    if (e.getSource() == outputTable) {
+                        synzer = MainWindow.getSynzer();
+                        if (synzer == null) {
+                            synzer = new SyntaxAnalyzerAutomate(lexer);
+                        } else {
+                            synzer.clear();
+                        }
+
+                        if (synzer instanceof SyntaxAnalyzerAutomate) {
+                            if (synzer.run()) {
+                                messageField.setText("All right");
+                            }
+                            String[] columnNames = {"#", "State", "Label", "Stack"};
+                            Object[][] data = getOutputTableData((SyntaxAnalyzerAutomate) synzer);
+
+                            TableModel model = new DefaultTableModel(data, columnNames) {
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            table.setModel(model);
+                            table.getTableHeader().setUpdateTableInRealTime(false);
+                        } else {
+                            String error = "Please use a automated method of syntax analyzer";
+                            JOptionPane.showMessageDialog(null, error);
+                        }
+
+                    }
+
+                } else {
+                    // show lexical exceptions
+                    showLexerExceptions(lexer);
+                }
+                try {
+                    table.getColumnModel().getColumn(0).setMaxWidth(30);
+                } catch (IndexOutOfBoundsException ex) {
+                }
+            }
+
+            private Object[][] getOutputTableData(SyntaxAnalyzerAutomate synzer) {
+                Stream<DataTableField> exceptionStream = synzer.getDataTable().stream();
+                AtomicInteger i = new AtomicInteger(1);
+                List<Object[]> errors = exceptionStream.map(d -> new Object[]{i.getAndIncrement(),
+                        d.getState(), d.getLabel(), d.getStack()}).collect(Collectors.toList());
+
+                Object[][] data = new Object[errors.size()][];
+                errors.toArray(data);
+                return data;
+            }
+        };
+    }
+
+    private void showLexerExceptions(LexicalAnalyser lexer) {
+        String[] columnNames = {"#", "Exception"};
+        Object[][] data = getExceptionsData(lexer);
+
+        TableModel model = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        table.setModel(model);
+        table.getTableHeader().setUpdateTableInRealTime(false);
+    }
+
+    private Object[][] getExceptionsData(LexicalAnalyser lexer) {
+        Stream<LexicalException> exceptionStream = lexer.getExceptions().stream();
+        AtomicInteger i = new AtomicInteger(1);
+        List<Object[]> exceptions = exceptionStream.map(e -> new Object[]{i.getAndIncrement(),
+                e.getMessage()}).collect(Collectors.toList());
+
+        Object[][] data = new Object[exceptions.size()][];
+        exceptions.toArray(data);
+        return data;
     }
 //    private ActionListener createAnalyseListener() {
 //        return new ActionListener() {

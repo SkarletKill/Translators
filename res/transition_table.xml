@@ -350,7 +350,10 @@
                 <goto>21</goto>
             </transition>
         </transitions>
-        <incomparability error="Opening brace expected"/>
+        <incomparability>
+            <stack>51</stack>
+            <goto>21</goto>
+        </incomparability>
     </state>
     <state name="42">
         <transitions>
@@ -416,7 +419,10 @@
                 <goto>21</goto>
             </transition>
         </transitions>
-        <incomparability error="Opening brace expected"/>
+        <incomparability>
+            <stack>51</stack>
+            <goto>21</goto>
+        </incomparability>
     </state>
     <state name="491">
         <transitions>

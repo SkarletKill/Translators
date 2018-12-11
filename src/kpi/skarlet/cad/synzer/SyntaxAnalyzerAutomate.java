@@ -2,6 +2,7 @@ package kpi.skarlet.cad.synzer;
 
 import kpi.skarlet.cad.lexer.LexicalAnalyser;
 import kpi.skarlet.cad.lexer.lexemes.Lexeme;
+import kpi.skarlet.cad.synzer.transition_table.DataTableField;
 import kpi.skarlet.cad.synzer.transition_table.State;
 import kpi.skarlet.cad.synzer.transition_table.TTReader;
 import kpi.skarlet.cad.synzer.transition_table.TransitionElems;
@@ -10,10 +11,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Stack;
 
-public class SyntaxAnalyzerAutomate {
+public class SyntaxAnalyzerAutomate extends SyntaxAnalyzer {
+    public static final String PATH_TRANSITION_TABLE = "res/transition_table.xml";
+
     private LexicalAnalyser la;
     private Map<Integer, State> stateTransitions;
     private ArrayList<DataTableField> dataTable;
+    private ArrayList<String> errors;
 
     private Stack<Integer> stack;
     private int i;
@@ -41,15 +45,39 @@ public class SyntaxAnalyzerAutomate {
             }
         };
         stack = new Stack<>();
-        TTReader ttr = new TTReader("res/transition_table.xml");
+        TTReader ttr = new TTReader(PATH_TRANSITION_TABLE);
         this.la = new LexicalAnalyser();
         this.la.run();
         this.stateTransitions = ttr.getStates();
         this.i = 0;
         this.state = 1;
         this.curLex = getCurrentLexeme();
+        this.errors = new ArrayList<>();
     }
 
+    public SyntaxAnalyzerAutomate(LexicalAnalyser lexer) {
+        dataTable = new ArrayList<>() {
+            @Override
+            public String toString() {
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < this.size(); i++) {
+                    builder.append(i + 1).append(": ").append(this.get(i)).append('\n');
+                }
+                return builder.toString();
+            }
+        };
+        stack = new Stack<>();
+        TTReader ttr = new TTReader(PATH_TRANSITION_TABLE);
+        this.la = lexer;
+//        this.la.run();
+        this.stateTransitions = ttr.getStates();
+        this.i = 0;
+        this.state = 1;
+        this.curLex = getCurrentLexeme();
+        this.errors = new ArrayList<>();
+    }
+
+    @Override
     public boolean run() {
         while (true) {    // || не последняя лксема
             String error;
@@ -71,7 +99,7 @@ public class SyntaxAnalyzerAutomate {
                             state = stack.pop();
                             continue;
                         } else {
-                            System.err.println("line: " + getLexemeLine(i) + " - " + error);
+                            error(error);
                         }
                         return false;
                     }
@@ -79,6 +107,30 @@ public class SyntaxAnalyzerAutomate {
             }
         }
 //        return false;
+    }
+
+    private void error(String error) {
+        errors.add("line: " + getLexemeLine(i) + " - " + error + "! But found" + ((curLex.equals("")) ? " nothing" : ": " + curLex));
+    }
+
+    @Override
+    public ArrayList<String> getErrors() {
+        return errors;
+    }
+
+    @Override
+    public void clear() {
+//        this.stateTransitions.clear();
+        this.dataTable.clear();
+        this.stack.clear();
+        this.errors.clear();
+        this.i = 0;
+        this.state = 1;
+        this.curLex = getCurrentLexeme();
+    }
+
+    public ArrayList<DataTableField> getDataTable() {
+        return dataTable;
     }
 
     private boolean hasTransition(String lex) {
@@ -119,6 +171,7 @@ public class SyntaxAnalyzerAutomate {
     }
 
     private int getLexemeLine(int i) {
+        if (la.getLexemes().isEmpty()) return 0;
         int index = (i < la.getLexemes().size()) ? i : la.getLexemes().size() - 1;
         return la.getLexemes().get(index).getLine();
     }
@@ -137,24 +190,4 @@ public class SyntaxAnalyzerAutomate {
         return list;
     }
 
-    private class DataTableField {
-        int state;
-        String label;
-        ArrayList<Integer> stack;
-
-        public DataTableField(int state, String label, ArrayList<Integer> stack) {
-            this.state = state;
-            this.label = label;
-            this.stack = stack;
-        }
-
-        @Override
-        public String toString() {
-            return new StringBuilder()
-                    .append("DTF{state: ").append(state).append(", ")
-                    .append("label: ").append(label).append(", ")
-                    .append("stack: ").append(stack).append("}")
-                    .toString();
-        }
-    }
 }
