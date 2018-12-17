@@ -14,11 +14,9 @@ import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -374,7 +372,7 @@ public class SynzerPanel extends JPanel {
                                 }
                             };
                             table.setModel(model);
-                            table.setDefaultRenderer(String.class, new MultiLineTableCellRenderer());
+                            table.setDefaultRenderer(Object.class, new MultiLineTableCellRenderer());
 //                            TableRowSorter<? extends TableModel> sort = new TableRowSorter<DefaultTableModel>(model);
 //                            table.setRowSorter(sort);
                             table.getTableHeader().setUpdateTableInRealTime(false);
@@ -391,7 +389,9 @@ public class SynzerPanel extends JPanel {
                 }
                 try {
                     table.getColumnModel().getColumn(0).setMaxWidth(30);
-                } catch (IndexOutOfBoundsException ex) {
+                    table.getColumnModel().getColumn(1).setMaxWidth(50);
+                    table.getColumnModel().getColumn(2).setMaxWidth(100);
+                } catch (IndexOutOfBoundsException ignored) {
                 }
             }
 
@@ -401,6 +401,7 @@ public class SynzerPanel extends JPanel {
                 AtomicInteger i = new AtomicInteger(1);
                 List<Object[]> errors = dataStream.map(d -> new Object[]{i.getAndIncrement(),
                         d.getKey(),
+//                        d.getValue().getTransitions(),
                         d.getValue().getTransitions(),
                         d.getValue().getTV(),
                         (d.getValue().getIncomparability() == null) ?

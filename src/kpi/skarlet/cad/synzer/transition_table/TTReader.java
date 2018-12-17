@@ -5,8 +5,8 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.*;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class TTReader {
@@ -40,17 +40,8 @@ public class TTReader {
 
             // Получаем корневой элемент
             Node root = document.getDocumentElement();
-//
-//            states = new HashMap<>() {
-//                @Override
-//                public String toString() {
-//                    return this.entrySet()
-//                            .stream()
-//                            .map(entry -> entry.getKey() + " = " + entry.getValue())
-//                            .collect(Collectors.joining(",\n ", "{", "}"));
-//                }
-//            };
-            states = new HashMap<>() {
+
+            states = new TreeMap<>() {
                 @Override
                 public String toString() {
                     return this.entrySet()

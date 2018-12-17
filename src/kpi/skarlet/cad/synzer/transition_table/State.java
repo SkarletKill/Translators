@@ -1,9 +1,6 @@
 package kpi.skarlet.cad.synzer.transition_table;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class State {
@@ -15,7 +12,7 @@ public class State {
 
     public State(int name) {
         this.name = name;
-        transitions = new HashMap<>() {
+        transitions = new TreeMap<>() {
             @Override
             public String toString() {
                 return this.entrySet()
@@ -56,8 +53,7 @@ public class State {
     }
 
     public String getTransitions() {
-        return transitions.keySet().toString();
-//        return transitions.entrySet().;
+//        return transitions.keySet().toString();
 
 //        Set<Map.Entry<String, TransitionElems>> entries = transitions.entrySet();
 //        String keys = "";
@@ -65,10 +61,17 @@ public class State {
 //            keys += entry.getKey() + "\n";
 //        }
 //        return keys;
+
+        Set<String> keySet = transitions.keySet();
+        String keys = "";
+        for (String key : keySet) {
+            keys += key + "\n";
+        }
+        return keys;
     }
 
     public String getTV(){
-        return transitions.values().toString();
+//        return transitions.values().toString();
 //        Collection<TransitionElems> values = transitions.values();
 
 //        Set<Map.Entry<String, TransitionElems>> entries = transitions.entrySet();
@@ -77,6 +80,13 @@ public class State {
 //            vals += entry.getValue() + "\n";
 //        }
 //        return vals;
+
+        Set<String> keySet = transitions.keySet();
+        String keys = "";
+        for (String key : keySet) {
+            keys += transitions.get(key) + "\n";
+        }
+        return keys;
     }
 
     public String getIncomparabilityMsg() {
