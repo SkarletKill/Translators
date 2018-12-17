@@ -15,4 +15,4 @@ int input, res, i;
  	res = -2.-3.-7;
  	cout << res;
  	exit:;
- 	}
+ }

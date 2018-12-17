@@ -40,7 +40,16 @@ public class TTReader {
 
             // Получаем корневой элемент
             Node root = document.getDocumentElement();
-
+//
+//            states = new HashMap<>() {
+//                @Override
+//                public String toString() {
+//                    return this.entrySet()
+//                            .stream()
+//                            .map(entry -> entry.getKey() + " = " + entry.getValue())
+//                            .collect(Collectors.joining(",\n ", "{", "}"));
+//                }
+//            };
             states = new HashMap<>() {
                 @Override
                 public String toString() {

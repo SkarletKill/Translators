@@ -49,11 +49,11 @@ public class LexicalAnalyser {
     private int iterator;
 
     public LexicalAnalyser() {
-        this.text = readFileAsString("res/program.txt");
+        setTextFromFile();
     }
 
     public LexicalAnalyser(String text) {
-        this.text = text + " ";
+        this.text = text;
     }
 
     public static String readFileAsString(String fileName) {
@@ -90,6 +90,8 @@ public class LexicalAnalyser {
 
     public boolean run() {
         try {
+            this.text += " ";
+//            setTextFromFile();
             do {
                 this.state1();
             } while (true);
@@ -101,7 +103,9 @@ public class LexicalAnalyser {
 
     public boolean run(String text) {
         try {
-            this.text = text + " ";
+            this.text = text;
+            this.text += " ";
+//            setTextFromFile();
             this.iterator = 0;
 
             do {
@@ -473,6 +477,10 @@ public class LexicalAnalyser {
                 exceptions.add(new LabelTransitionException(label.getName(), Lexeme.get(label.getName()).getLine()));
 //                exceptions.add(new LabelUsingWithoutDeclarationException(label.getName(), Lexeme.getList().get(label.getFromIndex()).getLine()));
         }
+    }
+
+    private void setTextFromFile() {
+        this.text = readFileAsString("res/program.txt");
     }
 
     private static Map<String, Integer> initKeywords() {

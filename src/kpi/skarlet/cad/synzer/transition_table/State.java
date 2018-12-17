@@ -1,7 +1,9 @@
 package kpi.skarlet.cad.synzer.transition_table;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class State {
@@ -51,6 +53,30 @@ public class State {
 
     public TransitionElems getTransition(String label) {
         return transitions.get(label);
+    }
+
+    public String getTransitions() {
+        return transitions.keySet().toString();
+//        return transitions.entrySet().;
+
+//        Set<Map.Entry<String, TransitionElems>> entries = transitions.entrySet();
+//        String keys = "";
+//        for (Map.Entry<String, TransitionElems> entry : entries) {
+//            keys += entry.getKey() + "\n";
+//        }
+//        return keys;
+    }
+
+    public String getTV(){
+        return transitions.values().toString();
+//        Collection<TransitionElems> values = transitions.values();
+
+//        Set<Map.Entry<String, TransitionElems>> entries = transitions.entrySet();
+//        String vals = "";
+//        for (Map.Entry<String, TransitionElems> entry : entries) {
+//            vals += entry.getValue() + "\n";
+//        }
+//        return vals;
     }
 
     public String getIncomparabilityMsg() {

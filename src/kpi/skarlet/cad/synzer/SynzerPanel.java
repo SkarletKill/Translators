@@ -7,15 +7,20 @@ import kpi.skarlet.cad.lexer.lexemes.Identifier;
 import kpi.skarlet.cad.lexer.lexemes.Label;
 import kpi.skarlet.cad.lexer.lexemes.Lexeme;
 import kpi.skarlet.cad.synzer.transition_table.DataTableField;
+import kpi.skarlet.cad.synzer.transition_table.MultiLineTableCellRenderer;
+import kpi.skarlet.cad.synzer.transition_table.State;
 
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,6 +37,7 @@ public class SynzerPanel extends JPanel {
     private JTextArea messageField;
     private JButton analyseText;
     private JButton outputTable;
+    private JButton inputTable;
 
     private int hPadding = 10;
     private int vPadding = 10;
@@ -67,6 +73,9 @@ public class SynzerPanel extends JPanel {
         outputTable = new JButton("Get Table");
         outputTable.addActionListener(createSynzerDataListener());
 
+        inputTable = new JButton("Get TransTable");
+        inputTable.addActionListener(createSynzerDataListener());
+
         JPanel buttonsPanel = new JPanel();
         GridLayout gridLayoutButtons = new GridLayout(1, 4);
         gridLayoutButtons.setHgap(10);
@@ -93,9 +102,14 @@ public class SynzerPanel extends JPanel {
         c.weightx = 0.25;
         c.gridx = 0;
         c.gridy = 0;
-        c.gridwidth = 2;
+        c.gridwidth = 1;
         message_runPanel.add(new JScrollPane(messageField), c);
 //        message_runPanel.add(table, c);
+        c.weighty = 0.1;
+        c.weightx = 0.0;
+        c.gridwidth = 1;
+        c.gridx = 1;
+        message_runPanel.add(inputTable, c);
         c.weighty = 0.1;
         c.weightx = 0.0;
         c.gridwidth = 1;
@@ -215,7 +229,6 @@ public class SynzerPanel extends JPanel {
                     }
 
                 } else {
-                    // show lexical exceptions
                     showLexerExceptions(lexer);
                 }
                 try {
@@ -339,6 +352,38 @@ public class SynzerPanel extends JPanel {
                         }
 
                     }
+                    else if (e.getSource() == inputTable) {
+                        synzer = MainWindow.getSynzer();
+                        if (synzer == null) {
+                            synzer = new SyntaxAnalyzerAutomate(lexer);
+                        } else {
+                            synzer.clear();
+                        }
+
+                        if (synzer instanceof SyntaxAnalyzerAutomate) {
+                            if (synzer.run()) {
+                                messageField.setText("All right");
+                            }
+                            String[] columnNames = {"#", "State", "Label", "Transition", "Incomparability"};
+                            Object[][] data = getInputingTableData((SyntaxAnalyzerAutomate) synzer);
+
+                            TableModel model = new DefaultTableModel(data, columnNames) {
+                                @Override
+                                public boolean isCellEditable(int row, int column) {
+                                    return false;
+                                }
+                            };
+                            table.setModel(model);
+                            table.setDefaultRenderer(String.class, new MultiLineTableCellRenderer());
+//                            TableRowSorter<? extends TableModel> sort = new TableRowSorter<DefaultTableModel>(model);
+//                            table.setRowSorter(sort);
+                            table.getTableHeader().setUpdateTableInRealTime(false);
+                        } else {
+                            String error = "Please use a automated method of syntax analyzer";
+                            JOptionPane.showMessageDialog(null, error);
+                        }
+
+                    }
 
                 } else {
                     // show lexical exceptions
@@ -348,6 +393,23 @@ public class SynzerPanel extends JPanel {
                     table.getColumnModel().getColumn(0).setMaxWidth(30);
                 } catch (IndexOutOfBoundsException ex) {
                 }
+            }
+
+            private Object[][] getInputingTableData(SyntaxAnalyzerAutomate synzer) {
+                Stream<Map.Entry<Integer, State>> dataStream = synzer.getTransitions().entrySet().stream();
+                Map<Integer, State> trans = synzer.getTransitions();
+                AtomicInteger i = new AtomicInteger(1);
+                List<Object[]> errors = dataStream.map(d -> new Object[]{i.getAndIncrement(),
+                        d.getKey(),
+                        d.getValue().getTransitions(),
+                        d.getValue().getTV(),
+                        (d.getValue().getIncomparability() == null) ?
+                                d.getValue().getIncomparabilityMsg() : d.getValue().getIncomparability()
+                }).collect(Collectors.toList());
+
+                Object[][] data = new Object[errors.size()][];
+                errors.toArray(data);
+                return data;
             }
 
             private Object[][] getOutputTableData(SyntaxAnalyzerAutomate synzer) {

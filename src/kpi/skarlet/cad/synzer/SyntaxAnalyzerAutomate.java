@@ -30,7 +30,8 @@ public class SyntaxAnalyzerAutomate extends SyntaxAnalyzer {
         boolean res = saa.run();
         System.out.println("SA: " + res);
 //        if (res)
-        System.out.println(saa.dataTable);
+//        System.out.println(saa.dataTable);
+        System.out.println(saa.stateTransitions);
     }
 
     public SyntaxAnalyzerAutomate() {
@@ -94,7 +95,13 @@ public class SyntaxAnalyzerAutomate extends SyntaxAnalyzer {
                     error = stateTransitions.get(state).getIncomparabilityMsg();
                     if (error != null) {
                         if (error.equals("exit")) {
-                            if (stack.empty()) return true;
+                            if (stack.empty()) {
+                                if (i < la.getLexemes().size()) {
+                                    error("There is extra code after closing brace. Nothing expected");
+                                    return false;
+                                }
+                                return true;
+                            }
                             addTableRecord();
                             state = stack.pop();
                             continue;
@@ -129,12 +136,21 @@ public class SyntaxAnalyzerAutomate extends SyntaxAnalyzer {
         this.curLex = getCurrentLexeme();
     }
 
+    public Map<Integer, State> getTransitions() {
+        return stateTransitions;
+    }
+
     public ArrayList<DataTableField> getDataTable() {
         return dataTable;
     }
 
     private boolean hasTransition(String lex) {
-        return stateTransitions.get(state).getTransition(lex) != null;
+        try {
+            return stateTransitions.get(state).getTransition(lex) != null;
+        } catch (Exception e){
+            System.out.println();
+        }
+        return false;
     }
 
     private boolean hasIncompatibilityTransition() {
