@@ -23,7 +23,6 @@ public class LexicalAnalyser {
 
     private final Map<String, Integer> keywords = initKeywords();
 
-    private static final String EMPTY_LEX = "";
     private VariableType ACTIVE_TYPE;
 
     public static final int LBL_CODE = 100;
@@ -96,7 +95,8 @@ public class LexicalAnalyser {
                 this.state1();
             } while (true);
         } catch (IOException e) {
-            if (e instanceof EndOfFileException) return true;
+            analyzeLabels();
+            if (e instanceof EndOfFileException && exceptions.isEmpty()) return true;
             else return false;
         }
     }
@@ -248,7 +248,7 @@ public class LexicalAnalyser {
         } else if (ch == CC.dot) {
             lex += ch;
             nextChar();
-            state12();
+            state6();
         } else {
             addLex(lex, LexemeType.CONSTANT);
             HAS_TO_READ = false;
@@ -290,7 +290,7 @@ public class LexicalAnalyser {
             state13();  // !=
         } else {
             exceptions.add(new UnexpectedLexemeException(lex, LINE_NUMBER));
-            lex = EMPTY_LEX;
+            clearLex();
         }
     }
 

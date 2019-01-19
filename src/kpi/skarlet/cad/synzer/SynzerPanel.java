@@ -373,8 +373,6 @@ public class SynzerPanel extends JPanel {
                             };
                             table.setModel(model);
                             table.setDefaultRenderer(Object.class, new MultiLineTableCellRenderer());
-//                            TableRowSorter<? extends TableModel> sort = new TableRowSorter<DefaultTableModel>(model);
-//                            table.setRowSorter(sort);
                             table.getTableHeader().setUpdateTableInRealTime(false);
                         } else {
                             String error = "Please use a automated method of syntax analyzer";
@@ -383,15 +381,14 @@ public class SynzerPanel extends JPanel {
 
                     }
 
-                } else {
-                    // show lexical exceptions
-                    showLexerExceptions(lexer);
-                }
-                try {
                     table.getColumnModel().getColumn(0).setMaxWidth(30);
                     table.getColumnModel().getColumn(1).setMaxWidth(50);
                     table.getColumnModel().getColumn(2).setMaxWidth(100);
-                } catch (IndexOutOfBoundsException ignored) {
+
+                } else {
+                    // show lexical exceptions
+                    showLexerExceptions(lexer);
+                    table.getColumnModel().getColumn(0).setMaxWidth(30);
                 }
             }
 
